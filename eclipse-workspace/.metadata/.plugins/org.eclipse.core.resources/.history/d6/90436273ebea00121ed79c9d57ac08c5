@@ -1,0 +1,54 @@
+package ia2.classes;
+import java.util.Random;
+
+
+
+public class MultiLayerNetwork {
+
+	/*
+	 * Clase que implementa una red neuronal multicapa
+	 * 
+	 */
+	
+	Layer[] layers;
+
+	public MultiLayerNetwork(int inputSize, int[] layersSize) {
+		layers = new Layer[layersSize.length];
+		Random r = new Random(1234);
+		for (int i = 0; i < layersSize.length; i++) {
+			int inSize = i == 0 ? inputSize : layersSize[i - 1];
+			layers[i] = new Layer(inSize, layersSize[i], r);
+		}
+	}
+
+	public Layer getLayer(int idx) {
+		return layers[idx];
+	}
+
+	public float[] run(float[] input) {
+		float[] actIn = input;
+		for (int i = 0; i < layers.length; i++) {
+			actIn = layers[i].run(actIn);
+		}
+		return actIn;
+	}
+
+	public void train(float[] input, float[] targetOutput, float learningRate, float momentum) 
+	{
+		float[] calcOut = run(input);
+		float[] error = new float[calcOut.length];
+		for (int i = 0; i < error.length; i++) 
+		{
+			error[i] = targetOutput[i] - calcOut[i]; // negative error
+		}
+		for (int i = layers.length - 1; i >= 0; i--) 
+		{
+			error = layers[i].train(error, learningRate, momentum);
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		
+		
+	}
+}
