@@ -1,0 +1,48 @@
+package ia2.classes;
+
+import java.awt.List;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+public class DataSet{
+	
+	private File f;
+	private LinkedList<String> lines_list;
+	
+	public DataSet(){
+		this.f = null;
+		this.lines_list = null;
+		
+	}
+	
+	public void readFile(String file_name){
+		try{
+			this.f = new File(file_name);
+		}catch (Exception e){
+			System.err.println("Imposible abrir archivo de datos: "+file_name);
+		}
+		
+		
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader("blah.txt"));
+			lines_list = new LinkedList<String>();	
+			try {
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					lines_list.add(line);
+				}
+			} finally {
+				reader.close();
+			}
+		} catch (IOException ioe) {
+			System.err.println("oops " + ioe.getMessage());
+		}
+	}
+
+	
+
+}

@@ -1,0 +1,16 @@
+package ia2.tests;
+
+import ia2.classes.DataSet;
+
+public class DataSetTests {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		DataSet ds = new DataSet();
+		ds.readFile("./redes-neuronales-artificiales/src/resources/dataSets/cancer/header");
+
+	}
+
+}

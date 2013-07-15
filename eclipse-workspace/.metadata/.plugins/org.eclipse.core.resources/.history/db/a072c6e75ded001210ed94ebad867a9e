@@ -1,0 +1,19 @@
+package ia2.classes;
+
+import java.io.File;
+
+public class DataSet {
+	
+	private File;
+	
+	public DataSet(){
+		
+	}
+	
+	public void readFile(String file_name){
+		try{
+			File f = new File(file_name);
+		}
+	}
+
+}

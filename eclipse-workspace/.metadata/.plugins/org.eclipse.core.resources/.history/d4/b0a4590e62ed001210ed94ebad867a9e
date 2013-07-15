@@ -1,0 +1,17 @@
+package ia2.tests;
+
+import ia2.classes.DataSet;
+
+public class DataSetTests {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		DataSet ds = new DataSet();
+		ds.readFile("/home/soto/src/github/redes-neuronales-artificiales/eclipse-workspace/redes-neuronales-artificiales/src/resources/dataSets/cancer/header");
+		System.out.println("Hola k ase");
+
+	}
+
+}

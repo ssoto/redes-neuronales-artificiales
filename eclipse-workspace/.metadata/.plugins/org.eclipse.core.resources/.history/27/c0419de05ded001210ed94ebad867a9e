@@ -1,0 +1,9 @@
+package ia2.classes;
+
+public class DataSet {
+	
+	public DataSet(){
+		
+	}
+
+}
