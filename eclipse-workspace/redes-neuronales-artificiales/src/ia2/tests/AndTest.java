@@ -1,6 +1,6 @@
 package ia2.tests;
 
-import ia2.classes.MultiLayerNetwork;
+import ia2.classes.RNA;
 
 import java.util.Random;
 
@@ -24,30 +24,30 @@ public class AndTest {
 											  new float[]{0}};
 				
 				// se inicializa la red con dos entradas 
-				MultiLayerNetwork mlp 
+				RNA mlp 
 				= 
-				new MultiLayerNetwork(2, new int[]{2, 1});
+				new RNA(2, new int[]{2, 1});
 				// desactivamos la sigmoide para la primera capa
 				mlp.getLayer(1).setIsSigmoid(false);
 				Random r = new Random();
 				int en = 500;
-				for (int e = 0; e < en; e++) 
+				for (int e = 0; e < en; e++)
 				{
 					for (int i = 0; i < res.length; i++) 
 					{
 						int idx = r.nextInt(res.length);
 						mlp.train(train[idx], res[idx], 0.3f, 0.6f);
 					}
-
+					// imprimimos las salidas en los pasos multiplos de 100
 					if ((e + 1) % 100 == 0)
 					{
-						System.out.println();
+						System.out.println("=================================");
+						System.out.printf("Paso del algoritmo %d\n", e + 1);
 						for (int i = 0; i < res.length; i++) 
 						{
 							float[] t = train[i];
-							System.out.printf("%d epoch\n", e + 1);
-							System.out.printf("%.1f, %.1f --> %.3f\n", 
-												t[0], t[1], mlp.run(t)[0]);
+							System.out.printf("Ejemplo %d-ésimo: %.1f, %.1f --> %.3f\n", 
+												i+1, t[0], t[1], mlp.run(t)[0]);
 						}
 					}
 				}

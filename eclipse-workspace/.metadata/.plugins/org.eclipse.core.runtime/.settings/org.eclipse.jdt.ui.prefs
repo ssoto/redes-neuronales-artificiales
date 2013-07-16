@@ -1,3 +1,4 @@
+content_assist_lru_history=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><history maxLHS\="100" maxRHS\="10"><lhs name\="java.io.File"><rhs name\="java.io.File"/></lhs><lhs name\="ia2.classes.DataSet"><rhs name\="ia2.classes.DataSet"/></lhs></history>
 content_assist_number_of_computers=13
 content_assist_proposals_background=255,255,255
 content_assist_proposals_foreground=60,60,60
@@ -16,6 +17,7 @@ java_multi_line_comment=153,150,139
 java_operator=243,246,238
 java_single_line_comment=153,150,139
 java_string=149,228,84
+org.eclipse.jdt.internal.ui.navigator.layout=1
 org.eclipse.jdt.ui.editor.tab.width=
 org.eclipse.jdt.ui.formatterprofiles.version=12
 org.eclipse.jdt.ui.javadoclocations.migrated=true
