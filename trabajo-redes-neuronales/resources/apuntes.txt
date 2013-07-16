@@ -5,3 +5,4 @@
 - Cuando se para por GL, la red devuelta es la de la época de error de validación mínimo
 - En la introducción explicar el general y la tutoría
 - Buscar criterios para la capa oculta -> internet
+
