@@ -15,7 +15,7 @@ public class DataSet{
 	
 	private int numInputs, numOutputs;
 	private Type typeInputs, typeOutputs;
-	private int training_examples, validation_examples, test_examples;
+	private int trainingExamples, validationExamples, testExamples;
 	
 	public DataSet(){
 		this.f = null;
@@ -83,6 +83,12 @@ public class DataSet{
 								this.setNumOutputs(outArgs);
 								this.setTypeOutputs(Float.class);
 							}
+						}else if(line.contains("training_examples=")){
+							this.trainingExamples = Integer.parseInt(line.split("=")[1]);
+						}else if(line.contains("validation_examples")){
+							this.validationExamples = Integer.parseInt(line.split("=")[1]);
+						}else if(line.contains("test_examples=")){
+							this.testExamples = Integer.parseInt(line.split("=")[1]);
 						}
 					}
 					linesReaded++;
@@ -96,7 +102,8 @@ public class DataSet{
 			System.err.println("oops " + ioe.getMessage());
 		} 
 		long elapsedTime = stopTime - startTime; 
-		System.out.println("Cargado fichero "+fileName+" en "+elapsedTime + " mS, se han leido "+this.linesList.size()+" lineas");
+		System.out.println("Cargado fichero "+fileName+" en "+elapsedTime + " mS, se han leido "+this.linesList.size()+" instancias, de la scuales:\n"
+							+this.trainingExamples+" training, "+this.validationExamples+" validation y "+this.testExamples+" test");
 	}
 
 
@@ -155,48 +162,48 @@ public class DataSet{
 	/**
 	 * @return the training_examples
 	 */
-	public int getTraining_examples() {
-		return training_examples;
+	public int getTrainingExamples() {
+		return trainingExamples;
 	}
 
 
 	/**
 	 * @param training_examples the training_examples to set
 	 */
-	public void setTraining_examples(int training_examples) {
-		this.training_examples = training_examples;
+	public void setTrainingExamples(int training_examples) {
+		this.trainingExamples = training_examples;
 	}
 
 
 	/**
 	 * @return the validation_examples
 	 */
-	public int getValidation_examples() {
-		return validation_examples;
+	public int getValidationExamples() {
+		return validationExamples;
 	}
 
 
 	/**
 	 * @param validation_examples the validation_examples to set
 	 */
-	public void setValidation_examples(int validation_examples) {
-		this.validation_examples = validation_examples;
+	public void setValidationExamples(int validation_examples) {
+		this.validationExamples = validation_examples;
 	}
 
 
 	/**
 	 * @return the test_examples
 	 */
-	public int getTest_examples() {
-		return test_examples;
+	public int getTestExamples() {
+		return testExamples;
 	}
 
 
 	/**
 	 * @param test_examples the test_examples to set
 	 */
-	public void setTest_examples(int test_examples) {
-		this.test_examples = test_examples;
+	public void setTestExamples(int test_examples) {
+		this.testExamples = test_examples;
 	}
 	
 	

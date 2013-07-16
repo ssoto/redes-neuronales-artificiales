@@ -1,0 +1,7 @@
+- Redactar de que va el criterio de para de validación cruzada.
+- En la documentación poner porque se utiliza la validación cruzada? Explicar la formula GL(t) pag. 24 de la documentación de proben1 => parará cuando el error sea mayor que alpha
+- Se propone además otro criterio de parada: "progreso de entrenamiento" => parará cuando se cumpla el primero de ellos
+- AUnque las salidas sean booleanas, nunca son lógicas. Son reales y se pone un umbral: >0.5 = 1, <=0.5 = 0
+- Cuando se para por GL, la red devuelta es la de la época de error de validación mínimo
+- En la introducción explicar el general y la tutoría
+- Buscar criterios para la capa oculta -> internet
