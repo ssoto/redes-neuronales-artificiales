@@ -7,10 +7,10 @@ import ia2.classes.RNA;
 public class MultiLayerNetworkTest {
 
 	public static void main(String[] args) throws Exception {
-		float[][] trainningSet = new float[][]{ new float[]{0, 0}, 
-										 new float[]{0, 1}, 
-										 new float[]{1, 0}, 
-										 new float[]{1, 1}};
+		float[][] trainningSet = new float[][]{  new float[]{0, 0}, 
+												 new float[]{0, 1}, 
+												 new float[]{1, 0}, 
+												 new float[]{1, 1}};
 		
 		float[][] ressult_set = new float[][]{	new float[]{0}, 
 												new float[]{1}, 
@@ -18,7 +18,7 @@ public class MultiLayerNetworkTest {
 												new float[]{0}};
 		// creamos la red con dos dos unidades de entrada, una de salida 
 		// y dos unidades en la capa intermedia
-		RNA mlp = new RNA (2, new int[]{2, 1});
+		RNA mlp = new RNA (2, new int[]{10, 1});
 		mlp.getLayer(1).setIsSigmoid(false);
 		Random r = new Random();
 		int en = 500;

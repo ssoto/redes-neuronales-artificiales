@@ -11,15 +11,18 @@ import java.util.List;
 public class DataSet{
 	
 	private File f;
-	private List<String[]> linesList;
 	
 	private int numInputs, numOutputs;
 	private Type typeInputs, typeOutputs;
-	private int trainingExamples, validationExamples, testExamples;
+	
+	private int trainingExamplesSize, validationExamplesSize, testExamplesSize;
+	private List<float[]> trainingExamples, validationExamples, testExamples;
 	
 	public DataSet(){
 		this.f = null;
-		this.linesList = null;
+		this.trainingExamples = new LinkedList<float[]>();
+		this.validationExamples = new LinkedList<float[]>();
+		this.testExamples = new LinkedList<float[]>();
 	}
 	
 	
@@ -32,20 +35,23 @@ public class DataSet{
 			System.err.println("Imposible abrir archivo de datos: "+fileName);
 		}
 		
-		
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(fileName));
-			linesList = new LinkedList<String[]>();	
 			try {
-				int linesReaded=0;
-				List<Long> newLine = new LinkedList<Long>();
+				int linesRead=0;
 				String line = null;
-				String [] lineSplitted;
+				
 				while ((line = reader.readLine()) != null) {
-					if(linesReaded >= 7 ){
+					if(linesRead >= 7 ){
 						// ya hemos leido la cabecera
-						lineSplitted = line.split(" ");
-						linesList.add(lineSplitted);
+						if( linesRead>=7 && linesRead<this.trainingExamplesSize+7 ){
+							this.process_training_line(line);
+						}else if (linesRead>=7+this.trainingExamplesSize &&
+								linesRead < 7+this.trainingExamplesSize+this.validationExamplesSize){
+							this.process_validation_line(line);
+						}else{
+							this.process_test_line(line);
+						}
 					}
 					else{
 						// es cabecera!
@@ -84,14 +90,15 @@ public class DataSet{
 								this.setTypeOutputs(Float.class);
 							}
 						}else if(line.contains("training_examples=")){
-							this.trainingExamples = Integer.parseInt(line.split("=")[1]);
+							this.trainingExamplesSize = Integer.parseInt(line.split("=")[1]);
 						}else if(line.contains("validation_examples")){
-							this.validationExamples = Integer.parseInt(line.split("=")[1]);
+							this.validationExamplesSize = Integer.parseInt(line.split("=")[1]);
 						}else if(line.contains("test_examples=")){
-							this.testExamples = Integer.parseInt(line.split("=")[1]);
+							this.testExamplesSize = Integer.parseInt(line.split("=")[1]);
 						}
 					}
-					linesReaded++;
+					// siempre actualizamos el contador de líneas leidas
+					linesRead++;
 					//System.out.println("Línea "+linesReaded+": "+line);
 				}
 			} finally {
@@ -102,8 +109,41 @@ public class DataSet{
 			System.err.println("oops " + ioe.getMessage());
 		} 
 		long elapsedTime = stopTime - startTime; 
-		System.out.println("Cargado fichero "+fileName+" en "+elapsedTime + " mS, se han leido "+this.linesList.size()+" instancias, de la scuales:\n"
-							+this.trainingExamples+" training, "+this.validationExamples+" validation y "+this.testExamples+" test");
+		
+		int total = this.getTrainingExamples()+this.getValidationExamples()+this.getTestExamples();
+		String msg = "Cargado fichero "+fileName+" en "+elapsedTime + " mS con "+total+" instancias de las cuales training: " + this.trainingExamples.size() + ", validation: "+
+							this.validationExamples.size()+ " y test: "+this.testExamples.size();
+		System.out.println(msg);
+		assert this.trainingExamplesSize == this.trainingExamples.size();
+		assert this.validationExamplesSize == this.validationExamples.size();
+		assert this.testExamplesSize == this.testExamples.size();
+	}
+	
+	private void process_test_line(String line) {
+		this.testExamples.add(this.process_line(line));
+	}
+
+
+	private void process_validation_line(String line) {
+		this.validationExamples.add(this.process_line(line));
+	}
+
+
+	private void process_training_line(String line) {
+		this.trainingExamples.add(this.process_line(line));
+	}
+
+
+	public float[] process_line(String line){
+		String[] splitedLine = line.split(" ");
+		// nos aseguramos que la longitud de la linea es la misma que numInputs+numOutputs
+		assert this.numInputs+this.numOutputs == splitedLine.length;
+
+		float[] result = new float[this.numInputs+this.numOutputs];
+		for (int i = 0; i < splitedLine.length; i++) {
+			result[i] = new Float(splitedLine[i]);
+		}
+		return result;
 	}
 
 
@@ -163,7 +203,7 @@ public class DataSet{
 	 * @return the training_examples
 	 */
 	public int getTrainingExamples() {
-		return trainingExamples;
+		return trainingExamplesSize;
 	}
 
 
@@ -171,7 +211,7 @@ public class DataSet{
 	 * @param training_examples the training_examples to set
 	 */
 	public void setTrainingExamples(int training_examples) {
-		this.trainingExamples = training_examples;
+		this.trainingExamplesSize = training_examples;
 	}
 
 
@@ -179,7 +219,7 @@ public class DataSet{
 	 * @return the validation_examples
 	 */
 	public int getValidationExamples() {
-		return validationExamples;
+		return validationExamplesSize;
 	}
 
 
@@ -187,7 +227,7 @@ public class DataSet{
 	 * @param validation_examples the validation_examples to set
 	 */
 	public void setValidationExamples(int validation_examples) {
-		this.validationExamples = validation_examples;
+		this.validationExamplesSize = validation_examples;
 	}
 
 
@@ -195,7 +235,7 @@ public class DataSet{
 	 * @return the test_examples
 	 */
 	public int getTestExamples() {
-		return testExamples;
+		return testExamplesSize;
 	}
 
 
@@ -203,7 +243,7 @@ public class DataSet{
 	 * @param test_examples the test_examples to set
 	 */
 	public void setTestExamples(int test_examples) {
-		this.testExamples = test_examples;
+		this.testExamplesSize = test_examples;
 	}
 	
 	
