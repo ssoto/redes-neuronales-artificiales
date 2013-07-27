@@ -30,7 +30,7 @@ public class MultiLayerNetworkTest {
 			}
 
 			if ((e + 1) % 50 == 0) {
-				System.out.printf("===================\nIteración %d \n", e + 1);
+				System.out.printf("===================\nÉpoca %d \n", e + 1);
 				for (int i = 0; i < ressult_set.length; i++) {
 					float[] t = trainningSet[i];
 					System.out.printf("Inputs: %.1f, %.1f --> Output %.3f\n", t[0], t[1], mlp.run(t)[0]);

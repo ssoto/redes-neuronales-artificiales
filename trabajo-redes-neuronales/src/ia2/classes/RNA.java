@@ -4,7 +4,7 @@ import java.util.Random;
 
 
 /**
- * @author soto
+ * @author Sergio Soto
  *
  */
 public class RNA {
@@ -13,7 +13,7 @@ public class RNA {
 	 * Clase que implementa una red neuronal artificial multicapa, RNA
 	 * 
 	 */
-	
+	int numLayers, inputSize;
 	Layer[] layers;
 
 	/**
@@ -21,18 +21,35 @@ public class RNA {
 	 * @param layersSize: tamaño de las campas de entrada y de salida
 	 */
 	
+//	public RNA(int inputLayerSize, int hidenLayerSize, int outputLayerSize) {
+//		if (hidenLayerSize > 0){
+//			numLayers = 3;
+//		}
+//		else{
+//			numLayers = 2;
+//		}
+//		layers = new Layer[numLayers];
+//		Random r = new Random(1234);
+//		for (int i = 0; i < numLayers; i++) {
+//			if(i==0)
+//				this.inputSize = inputSize;
+//			else
+//				this.inputSize = layersSize[i - 1];
+//			layers[i] = new Layer(inSize, layersSize[i]);
+//		}
+//	}
+	
 	public RNA(int inputSize, int[] layersSize) {
 		layers = new Layer[layersSize.length];
-		Random r = new Random(1234);
 		for (int i = 0; i < layersSize.length; i++) {
 			int inSize = i == 0 ? inputSize : layersSize[i - 1];
-			layers[i] = new Layer(inSize, layersSize[i], r);
+			layers[i] = new Layer(inSize, layersSize[i]);
 		}
 	}
 
 	/**
-	 * @param idx
-	 * @return
+	 * @param idx: índice del layer a devolver
+	 * @return layer que se corresponde con el índice
 	 */
 	public Layer getLayer(int idx) {
 		return layers[idx];
@@ -51,10 +68,10 @@ public class RNA {
 	}
 
 	/**
-	 * @param input
-	 * @param targetOutput
-	 * @param learningRate
-	 * @param momentum
+	 * @param input: entrada a la red neuronal
+	 * @param targetOutput: salida esperada para la entrada dada
+	 * @param learningRate: coeficiente de aprendizaje
+	 * @param momentum: momentum
 	 */
 	public void train(float[] input, float[] targetOutput, float learningRate, float momentum) 
 	{

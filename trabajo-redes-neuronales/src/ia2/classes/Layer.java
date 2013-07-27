@@ -10,18 +10,19 @@ public class Layer {
 	float[] weights;
 	float[] dweights;
 	boolean isSigmoid = true;
+	Random random;
 
 	/**
 	 * @param inputSize
 	 * @param outputSize
-	 * @param r
 	 */
-	public Layer(int inputSize, int outputSize, Random r) {
+	public Layer(int inputSize, int outputSize) {
 		output = new float[outputSize];
 		input = new float[inputSize + 1];
 		weights = new float[(1 + inputSize) * outputSize];
 		dweights = new float[weights.length];
-		initWeights(r);
+		random = new Random();
+		initWeights();
 	}
 
 	/**
@@ -32,11 +33,10 @@ public class Layer {
 	}
 
 	/**
-	 * @param r
 	 */
-	public void initWeights(Random r) {
+	public void initWeights() {
 		for (int i = 0; i < weights.length; i++) {
-			weights[i] = (r.nextFloat() - 0.5f) * 4f;
+			weights[i] = (random.nextFloat() - 0.5f) * 4f;
 		}
 	}
 
@@ -66,7 +66,7 @@ public class Layer {
 	 * @param error
 	 * @param learningRate
 	 * @param momentum
-	 * @return
+	 * @return un array que contiene los nuevos pesos actualizados
 	 */
 	public float[] train(float[] error, float learningRate, float momentum) {
 		int offs = 0;

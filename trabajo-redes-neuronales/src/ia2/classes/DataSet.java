@@ -16,17 +16,29 @@ public class DataSet{
 	private Type typeInputs, typeOutputs;
 	
 	private int trainingExamplesSize, validationExamplesSize, testExamplesSize;
-	private List<float[]> trainingExamples, validationExamples, testExamples;
+	private List<float[]> trainingExamplesList, validationExamplesList, testExamplesList;
+	
+	private float[][] trainingExamples, validationExamples, testExamples;
+	
 	
 	public DataSet(){
+		this.reset();
+	}
+	/*
+	 * Este método inicializa a vacíos los atributos 
+	 */
+	private void reset() {
 		this.f = null;
-		this.trainingExamples = new LinkedList<float[]>();
-		this.validationExamples = new LinkedList<float[]>();
-		this.testExamples = new LinkedList<float[]>();
+		this.trainingExamplesList = new LinkedList<float[]>();
+		this.validationExamplesList = new LinkedList<float[]>();
+		this.testExamplesList = new LinkedList<float[]>();
 	}
 	
 	
 	public void readFile(String fileName){
+		// reiniciamos por si las listas contienen ejemplos de una ejecución anterior
+		this.reset();
+		// almacenamos el tiempo de inicio para luego mostrar lo tardado en cargar
 		long startTime = System.currentTimeMillis();
 		long stopTime = 0L;
 		try{
@@ -110,27 +122,42 @@ public class DataSet{
 		} 
 		long elapsedTime = stopTime - startTime; 
 		
-		int total = this.getTrainingExamples()+this.getValidationExamples()+this.getTestExamples();
-		String msg = "Cargado fichero "+fileName+" en "+elapsedTime + " mS con "+total+" instancias de las cuales training: " + this.trainingExamples.size() + ", validation: "+
-							this.validationExamples.size()+ " y test: "+this.testExamples.size();
+		// imprimimos los tamaños y tiempos de lectura de los datos
+		int total = this.getTrainingExamplesSize()+this.getValidationExamplesSize()+this.getTestExamplesSize();
+		String msg = "Cargado fichero "+fileName+" en "+elapsedTime + " mS con "+total+" instancias de las cuales training: " + this.trainingExamplesList.size() + ", validation: "+
+							this.validationExamplesList.size()+ " y test: "+this.testExamplesList.size();
 		System.out.println(msg);
-		assert this.trainingExamplesSize == this.trainingExamples.size();
-		assert this.validationExamplesSize == this.validationExamples.size();
-		assert this.testExamplesSize == this.testExamples.size();
+		// algunos assert para comprobar que los datos cargados coinciden con 
+		// la cabecera del archivo
+		assert this.trainingExamplesSize == this.trainingExamplesList.size();
+		assert this.validationExamplesSize == this.validationExamplesList.size();
+		assert this.testExamplesSize == this.testExamplesList.size();
+		
+		// se transforman las listas en arrays
+		this.trainingExamples = this.getArrayFromList(this.trainingExamplesList);
+		this.validationExamples = this.getArrayFromList(this.validationExamplesList);
+		this.testExamples = this.getArrayFromList(this.testExamplesList);
 	}
 	
+	private float[][] getArrayFromList(List<float[]> listOfArrays) {
+		float[][] result = new float[listOfArrays.size()][this.getNumInputs()+this.getNumOutputs()];
+		for (int i = 0; i < listOfArrays.size(); i++) {
+			result[i] = listOfArrays.get(i);
+		}
+		return result;
+	}
 	private void process_test_line(String line) {
-		this.testExamples.add(this.process_line(line));
+		this.testExamplesList.add(this.process_line(line));
 	}
 
 
 	private void process_validation_line(String line) {
-		this.validationExamples.add(this.process_line(line));
+		this.validationExamplesList.add(this.process_line(line));
 	}
 
 
 	private void process_training_line(String line) {
-		this.trainingExamples.add(this.process_line(line));
+		this.trainingExamplesList.add(this.process_line(line));
 	}
 
 
@@ -202,7 +229,7 @@ public class DataSet{
 	/**
 	 * @return the training_examples
 	 */
-	public int getTrainingExamples() {
+	public int getTrainingExamplesSize() {
 		return trainingExamplesSize;
 	}
 
@@ -218,7 +245,7 @@ public class DataSet{
 	/**
 	 * @return the validation_examples
 	 */
-	public int getValidationExamples() {
+	public int getValidationExamplesSize() {
 		return validationExamplesSize;
 	}
 
@@ -234,7 +261,7 @@ public class DataSet{
 	/**
 	 * @return the test_examples
 	 */
-	public int getTestExamples() {
+	public int getTestExamplesSize() {
 		return testExamplesSize;
 	}
 
@@ -246,8 +273,14 @@ public class DataSet{
 		this.testExamplesSize = test_examples;
 	}
 	
-	
-
+	public float[][] getTestExamplesInput() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public float[][] getTestExamplesOutput() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 }
