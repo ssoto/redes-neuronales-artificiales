@@ -7,8 +7,15 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class DataSet{
+	
+	public enum LineType{
+		TRAINING,
+		VALIDATION,
+		TEST
+	}
 	
 	private File f;
 	
@@ -18,7 +25,7 @@ public class DataSet{
 	private int trainingExamplesSize, validationExamplesSize, testExamplesSize;
 	private List<float[]> trainingExamplesList, validationExamplesList, testExamplesList;
 	
-	private float[][] trainingExamples, validationExamples, testExamples;
+	private DataExample[] trainingExamples, validationExamples, testExamples;
 	
 	
 	public DataSet(){
@@ -57,12 +64,12 @@ public class DataSet{
 					if(linesRead >= 7 ){
 						// ya hemos leido la cabecera
 						if( linesRead>=7 && linesRead<this.trainingExamplesSize+7 ){
-							this.process_training_line(line);
+							this.process_line(LineType.TRAINING ,line);
 						}else if (linesRead>=7+this.trainingExamplesSize &&
 								linesRead < 7+this.trainingExamplesSize+this.validationExamplesSize){
-							this.process_validation_line(line);
+							this.process_line(LineType.VALIDATION, line);
 						}else{
-							this.process_test_line(line);
+							this.process_line(LineType.TEST, line);
 						}
 					}
 					else{
@@ -111,7 +118,7 @@ public class DataSet{
 					}
 					// siempre actualizamos el contador de líneas leidas
 					linesRead++;
-					//System.out.println("Línea "+linesReaded+": "+line);
+					System.out.println("Línea "+linesRead+": "+line);
 				}
 			} finally {
 				reader.close();
@@ -134,43 +141,70 @@ public class DataSet{
 		assert this.testExamplesSize == this.testExamplesList.size();
 		
 		// se transforman las listas en arrays
-		this.trainingExamples = this.getArrayFromList(this.trainingExamplesList);
-		this.validationExamples = this.getArrayFromList(this.validationExamplesList);
-		this.testExamples = this.getArrayFromList(this.testExamplesList);
+		this.trainingExamples = this.createDataFromList(this.trainingExamplesList);
+		this.validationExamples = this.createDataFromList(this.validationExamplesList);
+		this.testExamples = this.createDataFromList(this.testExamplesList);
 	}
 	
-	private float[][] getArrayFromList(List<float[]> listOfArrays) {
-		float[][] result = new float[listOfArrays.size()][this.getNumInputs()+this.getNumOutputs()];
+	private DataExample[] createDataFromList(List<float[]> listOfArrays) {
+		
+		float[] data;
+		float[] inputArray = new float[this.numInputs];
+		float[] outputArray = new float[this.numOutputs];
+		DataExample[] result = new DataExample[listOfArrays.size()];
+		
+		// iteramos sobre cada elemento del array de entrada que contiene
+		// una lista de entradas y salidas concatenadas
 		for (int i = 0; i < listOfArrays.size(); i++) {
-			result[i] = listOfArrays.get(i);
+			data = listOfArrays.get(i);
+			// según el índice de cada elemento sabremos si es entrada o salida
+			for (int j = 0; j < data.length; j++) {
+				if(j<this.numInputs){
+					inputArray[j] = data[j];
+				}
+				else{
+					outputArray[j-this.numInputs] = data[j];
+				}
+			}
+			DataExample item = new DataExample(inputArray, outputArray);
+			result[i] = item;
 		}
+		
 		return result;
 	}
-	private void process_test_line(String line) {
-		this.testExamplesList.add(this.process_line(line));
-	}
+	
 
 
-	private void process_validation_line(String line) {
-		this.validationExamplesList.add(this.process_line(line));
-	}
-
-
-	private void process_training_line(String line) {
-		this.trainingExamplesList.add(this.process_line(line));
-	}
-
-
-	public float[] process_line(String line){
+	/**
+	 * @param type
+	 * @param line
+	 * @return 
+	 */
+	public void process_line(LineType type, String line){
 		String[] splitedLine = line.split(" ");
 		// nos aseguramos que la longitud de la linea es la misma que numInputs+numOutputs
 		assert this.numInputs+this.numOutputs == splitedLine.length;
-
-		float[] result = new float[this.numInputs+this.numOutputs];
+		
+		float[] floatAray = new float[this.numInputs+this.numOutputs];
+		
 		for (int i = 0; i < splitedLine.length; i++) {
-			result[i] = new Float(splitedLine[i]);
+			floatAray[i] = new Float(splitedLine[i]);
+			
 		}
-		return result;
+		switch (type) {
+		case TEST:
+			this.testExamplesList.add(floatAray);
+			break;
+		case TRAINING:
+			this.trainingExamplesList.add(floatAray);
+			break;
+		case VALIDATION:
+			this.validationExamplesList.add(floatAray);
+			break;
+		default:
+			break;
+		}
+		
 	}
 
 
@@ -265,7 +299,6 @@ public class DataSet{
 		return testExamplesSize;
 	}
 
-
 	/**
 	 * @param test_examples the test_examples to set
 	 */
@@ -273,14 +306,11 @@ public class DataSet{
 		this.testExamplesSize = test_examples;
 	}
 	
-	public float[][] getTestExamplesInput() {
+	public DataExample[] getTestExamples() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.testExamples;
 	}
-	public float[][] getTestExamplesOutput() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 	
 
 }
