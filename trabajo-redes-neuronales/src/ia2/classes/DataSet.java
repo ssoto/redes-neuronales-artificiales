@@ -48,11 +48,12 @@ public class DataSet{
 		// almacenamos el tiempo de inicio para luego mostrar lo tardado en cargar
 		long startTime = System.currentTimeMillis();
 		long stopTime = 0L;
-		try{
+		
+		if (fileName==null)
+			throw new NullPointerException("fileName can't be null");
+		else
 			this.f = new File(fileName);
-		}catch (Exception e){
-			System.err.println("Imposible abrir archivo de datos: "+fileName);
-		}
+		
 		
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(fileName));
@@ -118,14 +119,15 @@ public class DataSet{
 					}
 					// siempre actualizamos el contador de líneas leidas
 					linesRead++;
-					System.out.println("Línea "+linesRead+": "+line);
+//					System.out.println("Línea "+linesRead+": "+line);
 				}
 			} finally {
 				reader.close();
 				stopTime = System.currentTimeMillis();
 			}
 		} catch (IOException ioe) {
-			System.err.println("oops " + ioe.getMessage());
+			System.err.println("imposible leer el archivo" + fileName);
+			System.exit(1);
 		} 
 		long elapsedTime = stopTime - startTime; 
 		
@@ -149,14 +151,14 @@ public class DataSet{
 	private DataExample[] createDataFromList(List<float[]> listOfArrays) {
 		
 		float[] data;
-		float[] inputArray = new float[this.numInputs];
-		float[] outputArray = new float[this.numOutputs];
 		DataExample[] result = new DataExample[listOfArrays.size()];
 		
 		// iteramos sobre cada elemento del array de entrada que contiene
 		// una lista de entradas y salidas concatenadas
 		for (int i = 0; i < listOfArrays.size(); i++) {
 			data = listOfArrays.get(i);
+			float[] inputArray = new float[this.numInputs];
+			float[] outputArray = new float[this.numOutputs];
 			// según el índice de cada elemento sabremos si es entrada o salida
 			for (int j = 0; j < data.length; j++) {
 				if(j<this.numInputs){
