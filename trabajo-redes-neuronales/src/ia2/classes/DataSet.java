@@ -28,6 +28,7 @@ public class DataSet{
 	private DataExample[] trainingExamples, validationExamples, testExamples;
 	
 	
+	
 	public DataSet(){
 		this.reset();
 	}
@@ -311,6 +312,20 @@ public class DataSet{
 	public DataExample[] getTestExamples() {
 		// TODO Auto-generated method stub
 		return this.testExamples;
+	}
+	
+	public DataExample[] getTrainingExamples() {
+		return trainingExamples;
+	}
+	public void setTrainingExamples(DataExample[] trainingExamples) {
+		this.trainingExamples = trainingExamples;
+	}
+	
+	public DataExample[] getValidationExamples(){
+		return this.validationExamples;
+	}
+	public void setValidationExamples(DataExample[] validationExamples){
+		this.validationExamples = validationExamples;
 	}
 	
 	
