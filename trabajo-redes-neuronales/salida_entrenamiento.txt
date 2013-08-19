@@ -1,0 +1,135 @@
+===================================================================
+Prueba con red neuronal con 0 capas intermedias:
+Cargado fichero ./resources/dataSets/cancer/cancer1.dt en 77 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 1,292880 en época 0
+Cargado fichero ./resources/dataSets/cancer/cancer2.dt en 45 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 1,292658 en época 0
+Cargado fichero ./resources/dataSets/cancer/cancer3.dt en 3 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,906300 en época 0
+===================================================================
+===================================================================
+Prueba con red neuronal con 1 capas intermedias:
+Cargado fichero ./resources/dataSets/cancer/cancer1.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,468245 en época 2995
+Cargado fichero ./resources/dataSets/cancer/cancer2.dt en 2 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,084282 en época 2995
+Cargado fichero ./resources/dataSets/cancer/cancer3.dt en 2 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,357096 en época 2995
+===================================================================
+===================================================================
+Prueba con red neuronal con 2 capas intermedias:
+Cargado fichero ./resources/dataSets/cancer/cancer1.dt en 2 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,665975 en época 2995
+Cargado fichero ./resources/dataSets/cancer/cancer2.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,140298 en época 2855
+Cargado fichero ./resources/dataSets/cancer/cancer3.dt en 2 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,406471 en época 790
+===================================================================
+===================================================================
+Prueba con red neuronal con 3 capas intermedias:
+Cargado fichero ./resources/dataSets/cancer/cancer1.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,620332 en época 2995
+Cargado fichero ./resources/dataSets/cancer/cancer2.dt en 2 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,247552 en época 1060
+Cargado fichero ./resources/dataSets/cancer/cancer3.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,397743 en época 25
+===================================================================
+===================================================================
+Prueba con red neuronal con 4 capas intermedias:
+Cargado fichero ./resources/dataSets/cancer/cancer1.dt en 2 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,579583 en época 125
+Cargado fichero ./resources/dataSets/cancer/cancer2.dt en 2 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,251460 en época 1115
+Cargado fichero ./resources/dataSets/cancer/cancer3.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,365812 en época 40
+===================================================================
+===================================================================
+Prueba con red neuronal con 5 capas intermedias:
+Cargado fichero ./resources/dataSets/cancer/cancer1.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,492828 en época 2995
+Cargado fichero ./resources/dataSets/cancer/cancer2.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,300490 en época 175
+Cargado fichero ./resources/dataSets/cancer/cancer3.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,434804 en época 15
+===================================================================
+===================================================================
+Prueba con red neuronal con 6 capas intermedias:
+Cargado fichero ./resources/dataSets/cancer/cancer1.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,265753 en época 2975
+Cargado fichero ./resources/dataSets/cancer/cancer2.dt en 2 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,313080 en época 125
+Cargado fichero ./resources/dataSets/cancer/cancer3.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,525647 en época 1750
+===================================================================
+===================================================================
+Prueba con red neuronal con 7 capas intermedias:
+Cargado fichero ./resources/dataSets/cancer/cancer1.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,305204 en época 2030
+Cargado fichero ./resources/dataSets/cancer/cancer2.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,246339 en época 2440
+Cargado fichero ./resources/dataSets/cancer/cancer3.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,332372 en época 2855
+===================================================================
+===================================================================
+Prueba con red neuronal con 8 capas intermedias:
+Cargado fichero ./resources/dataSets/cancer/cancer1.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,376821 en época 2640
+Cargado fichero ./resources/dataSets/cancer/cancer2.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,321651 en época 280
+Cargado fichero ./resources/dataSets/cancer/cancer3.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,461633 en época 850
+===================================================================
+===================================================================
+Prueba con red neuronal con 9 capas intermedias:
+Cargado fichero ./resources/dataSets/cancer/cancer1.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,462415 en época 1730
+Cargado fichero ./resources/dataSets/cancer/cancer2.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,337057 en época 210
+Cargado fichero ./resources/dataSets/cancer/cancer3.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,508703 en época 2595
+===================================================================
+===================================================================
+Prueba con red neuronal con 10 capas intermedias:
+Cargado fichero ./resources/dataSets/cancer/cancer1.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,398144 en época 2890
+Cargado fichero ./resources/dataSets/cancer/cancer2.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,353621 en época 175
+Cargado fichero ./resources/dataSets/cancer/cancer3.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,495719 en época 2150
+===================================================================
+===================================================================
+Prueba con red neuronal con 11 capas intermedias:
+Cargado fichero ./resources/dataSets/cancer/cancer1.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,504510 en época 1495
+Cargado fichero ./resources/dataSets/cancer/cancer2.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,321089 en época 135
+Cargado fichero ./resources/dataSets/cancer/cancer3.dt en 2 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,444192 en época 2935
+===================================================================
+===================================================================
+Prueba con red neuronal con 12 capas intermedias:
+Cargado fichero ./resources/dataSets/cancer/cancer1.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,511577 en época 910
+Cargado fichero ./resources/dataSets/cancer/cancer2.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,320808 en época 145
+Cargado fichero ./resources/dataSets/cancer/cancer3.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,414989 en época 2850
+===================================================================
+===================================================================
+Prueba con red neuronal con 13 capas intermedias:
+Cargado fichero ./resources/dataSets/cancer/cancer1.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,402501 en época 2975
+Cargado fichero ./resources/dataSets/cancer/cancer2.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,345393 en época 335
+Cargado fichero ./resources/dataSets/cancer/cancer3.dt en 2 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,504210 en época 2630
+===================================================================
+===================================================================
+Prueba con red neuronal con 14 capas intermedias:
+Cargado fichero ./resources/dataSets/cancer/cancer1.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,428255 en época 2995
+Cargado fichero ./resources/dataSets/cancer/cancer2.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,346381 en época 195
+Cargado fichero ./resources/dataSets/cancer/cancer3.dt en 1 mS con 699 instancias de las cuales training: 350, validation: 175 y test: 174
+El menor error cuadrático fué 0,467256 en época 2990
+===================================================================

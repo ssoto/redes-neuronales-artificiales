@@ -1,4 +1,4 @@
-package ia2.tests;
+package ia2.mains;
 
 import ia2.classes.DataExample;
 import ia2.classes.DataSet;
@@ -38,7 +38,7 @@ public class SimpletTraining {
 			if ((e % _VERIFY_EPOCHS == 0)) {
 				print_result(ds, redNeuronal, r, e);
 				
-				double currentSqrError = squaredError(redNeuronal, ds.getValidationExamples());
+				double currentSqrError = redNeuronal.squaredError( ds.getValidationExamples());
 //				System.out.printf("\terror cuadrático: %f", currentSqrError);
 				if (currentSqrError < minSqrError){
 					minSqrErrorEpoch = e;
@@ -50,25 +50,6 @@ public class SimpletTraining {
 		System.out.printf("El menor error cuadrático fué %f en época %d", minSqrError, minSqrErrorEpoch);
 		System.out.println("");
 
-	}
-
-	private static double squaredError(RNA redNeuronal, DataExample[] examples) {
-		double currendSquaredError, squaredErrorAcum=0;
-		float[] currentExampleInput, currentExampleOutput, result;
-		for (int i = 0; i < examples.length; i++) {
-			currentExampleInput = examples[i].getInputs();
-			currentExampleOutput = examples[i].getOutputs();
-			
-			result = redNeuronal.run(currentExampleInput);
-			
-			currendSquaredError = 0.0;
-			for (int j = 0; j < currentExampleOutput.length; j++) {
-				currendSquaredError += Math.sqrt(Math.abs(currentExampleOutput[j] - result[j]));
-			}
-			
-			squaredErrorAcum += currendSquaredError;
-		}
-		return squaredErrorAcum/examples.length;
 	}
 
 	private static void traing_over_dataset(int size, RNA redNeuronal,

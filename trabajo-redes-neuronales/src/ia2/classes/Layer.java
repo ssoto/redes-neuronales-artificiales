@@ -3,6 +3,11 @@ package ia2.classes;
 import java.util.Arrays;
 import java.util.Random;
 
+/**
+ * @author Sergio Soto
+ *
+ */
+
 public class Layer {
 
 	float[] output;

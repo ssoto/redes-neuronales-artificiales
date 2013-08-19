@@ -56,7 +56,7 @@ public class RNA {
 
 	/**
 	 * @param input
-	 * @return
+	 * @return valores devueltos por la red para la entrada dada
 	 */
 	public float[] run(float[] input) {
 		float[] actIn = input;
@@ -84,5 +84,23 @@ public class RNA {
 		{
 			error = layers[i].train(error, learningRate, momentum);
 		}
+	}
+	
+	public double squaredError(DataExample[] examples){
+		double currentSquaredError, squaredErrorAcum=0;
+		float[] currentExampleInput, currentExampleOutput, result;
+		for (int i = 0; i < examples.length; i++) {
+			currentExampleInput = examples[i].getInputs();
+			currentExampleOutput = examples[i].getOutputs();
+			
+			result = this.run(currentExampleInput);
+			currentSquaredError = 0.0;
+			for (int j = 0; j < currentExampleOutput.length; j++) {
+				currentSquaredError += Math.sqrt(Math.abs(currentExampleOutput[j]-result[j]));
+			}
+			squaredErrorAcum += currentSquaredError;
+		}
+		
+		return squaredErrorAcum/examples.length;
 	}
 }

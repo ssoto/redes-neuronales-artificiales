@@ -1,4 +1,4 @@
-package ia2.tests;
+package ia2.mains;
 
 import java.util.Random;
 
