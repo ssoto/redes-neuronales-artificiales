@@ -19,6 +19,7 @@ public class SimpletTraining {
 	 */
 
 	public static void start(String fileName, int hydenLayerSize){
+		
 		Random r = new Random();
 		double minSqrError = Double.MAX_VALUE;
 		int minSqrErrorEpoch = -1;

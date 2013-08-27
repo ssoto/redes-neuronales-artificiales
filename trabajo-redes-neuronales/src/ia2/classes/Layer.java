@@ -79,7 +79,7 @@ public class Layer {
 		for (int i = 0; i < output.length; i++) {
 			float d = error[i];
 			// si tenemos la función sigmoide se aplica para la actualización
-			// del peso
+			// del peso del arco correspondiente
 			if (isSigmoid) {
 				d *= output[i] * (1 - output[i]);
 			}

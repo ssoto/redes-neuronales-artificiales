@@ -20,31 +20,15 @@ public class RNA {
 	 * @param layersSize: tamaño de las campas de entrada y de salida
 	 */
 	
-//	public RNA(int inputLayerSize, int hidenLayerSize, int outputLayerSize) {
-//		if (hidenLayerSize > 0){
-//			numLayers = 3;
-//		}
-//		else{
-//			numLayers = 2;
-//		}
-//		layers = new Layer[numLayers];
-//		Random r = new Random(1234);
-//		for (int i = 0; i < numLayers; i++) {
-//			if(i==0)
-//				this.inputSize = inputSize;
-//			else
-//				this.inputSize = layersSize[i - 1];
-//			layers[i] = new Layer(inSize, layersSize[i]);
-//		}
-//	}
-	
 	public RNA(int inputSize, int[] layersSize) {
 		layers = new Layer[layersSize.length];
 		for (int i = 0; i < layersSize.length; i++) {
 			int inSize = i == 0 ? inputSize : layersSize[i - 1];
+			// el constructor de Layer recibe su tamaño y el de la siguiente capa
 			layers[i] = new Layer(inSize, layersSize[i]);
 		}
 	}
+	
 
 	/**
 	 * @param idx: índice del layer a devolver

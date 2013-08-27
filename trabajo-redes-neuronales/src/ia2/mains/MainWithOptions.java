@@ -1,5 +1,13 @@
 package ia2.mains;
 
+import ia2.classes.DataSet;
+import ia2.classes.RNA;
+
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -10,28 +18,37 @@ import org.apache.commons.cli.Options;
 /**
  * @author Sergio Soto
  * 
- * clase que parsea las opciones que se introducen por comando 
+ * clase que parsea las opciones que se introducen por comando y
+ * entrena la red enuronal. Es posible especificar las siguientes opciones:
+ * 
+ * @param hydeLayer: dimensión de la capa oculta
+ * @param momentum: valor para el momentum
+ * @param learningRate: coeficiente de aprendizaje del algoritmo de retropropagación
+ * @param dataFile: archivo con ejemplos de PROBEN1
  *
  */
 
 public class MainWithOptions {
+	
+	private static final int _MAX_EPOCHS = 3000;
+	private static final int _VERIFY_EPOCHS = 5;
 	
 	private static final float _LEARNING_RATE = 0.3f;
 	private static final float _MOMENTUM = 0.6f;
 	private static final String _MY_APP = "BORN_APP";
 	
 	
-
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 				
 		// cadenas de nombres de opciones
 		String 	hyde = "hydeLayer"; 
 		String	momentum = "momentum";
 		String	learningRate = "learningRate";
 		String 	fileOption = "dataFile";
+		String  outputFileName = "./output.txt";
 		
 		String header = "Ejecutable para entrenar una red neuronal a partir \nde un archivo perteneciente a PROBEN1\n";
 		String footer = "\nProyecto para la asignatura IA2\nAlojado en https://github.com/ssoto/redes-neuronales-artificiales\n\n";
@@ -40,15 +57,10 @@ public class MainWithOptions {
 		// varialbes donde guardar parámetros de entrada
 		float learningRateRatio, momentumRatio;
 		int hydeLayerSize;
+		String proben1File;
 		
+		// se configuran las opciones que queremos recoger por la línea de comandos		
 		Options options = new Options();
-		
-//		options.addOption(	OptionBuilder.withLongOpt(fileOption)
-//										 .withDescription("The file to be processed")
-//										 .hasArg()
-//										 .withArgName("FILE")
-//										 .isRequired()
-//										 .create('f'));
 		
 		Option dataOption = new Option(fileOption, true, "fichero de datos sobre el que realizar las operaciones de entrenamiento, validación cruzada y calculo de error");
 		dataOption.setRequired(true);
@@ -70,6 +82,8 @@ public class MainWithOptions {
 		
 		options.addOption(  "h", "help", false, "Muestra este mensaje" );
 		
+		
+		// ahora parseamos las opciones
 		CommandLineParser parser = new BasicParser();
 		
 		try {
@@ -79,6 +93,13 @@ public class MainWithOptions {
                 return;
 			}
 			else{
+				if (!cmd.hasOption(fileOption)){
+					new HelpFormatter().printHelp("myapp", header, options, footer, true);
+	                return;
+				}
+				else{
+					proben1File = cmd.getOptionValue(fileOption);
+				}
 				// tratamos numero de elementos de la capa oculta
 				hydeLayerSize = 0;
 				if (cmd.hasOption(hyde)){
@@ -107,11 +128,32 @@ public class MainWithOptions {
             return;
         } 
 		
-		/*
-		 * TODO: añadir comportamiento!!
-		 */
+		// se redirecciona la salida al fichero de marras
+		String timeStamp = new SimpleDateFormat("HHmmss_ddMMyyyy").format(Calendar.getInstance().getTime());
+		PrintStream out = new PrintStream(new FileOutputStream(outputFileName+timeStamp));
+		System.setOut(out);
+		
 		System.out.printf( "Parámetros para el algoritmo:\n\tcapas ocultas:%d\n\tlearningRate: %.2f\n\tmomentum: %.2f\n",
-							hydeLayerSize, momentumRatio, learningRateRatio);
+				hydeLayerSize, momentumRatio, learningRateRatio);
+		
+		/************************************************************************
+		 * 
+		 * AQUÍ EMPIEZA EL TRABAJO CON LA RED NEURONAL REALMENTE
+		 * 
+		 */
+		
+		double minSqrError = Double.MAX_VALUE;
+		int minSqrErrorEpoch = -1;
+		
+		DataSet ds = new DataSet();
+		ds.readFile(proben1File);
+		
+		RNA redNeuronal = new RNA(ds.getNumInputs(), new int[]{hydeLayerSize, ds.getNumOutputs()});
+		
+		for(int epoch=0; epoch<_MAX_EPOCHS; epoch++){
+			
+		}
+		
 		
 	}
 

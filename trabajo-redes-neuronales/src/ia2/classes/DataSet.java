@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class DataSet{
 	
@@ -310,7 +309,6 @@ public class DataSet{
 	}
 	
 	public DataExample[] getTestExamples() {
-		// TODO Auto-generated method stub
 		return this.testExamples;
 	}
 	
