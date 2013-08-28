@@ -46,8 +46,6 @@ public class DataSet{
 		// reiniciamos por si las listas contienen ejemplos de una ejecución anterior
 		this.reset();
 		// almacenamos el tiempo de inicio para luego mostrar lo tardado en cargar
-		long startTime = System.currentTimeMillis();
-		long stopTime = 0L;
 		
 		if (fileName==null)
 			throw new NullPointerException("fileName can't be null");
@@ -123,17 +121,15 @@ public class DataSet{
 				}
 			} finally {
 				reader.close();
-				stopTime = System.currentTimeMillis();
 			}
 		} catch (IOException ioe) {
 			System.err.println("imposible leer el archivo" + fileName);
 			System.exit(1);
 		} 
-		long elapsedTime = stopTime - startTime; 
 		
 		// imprimimos los tamaños y tiempos de lectura de los datos
 		int total = this.getTrainingExamplesSize()+this.getValidationExamplesSize()+this.getTestExamplesSize();
-		String msg = "Cargado fichero "+fileName+" en "+elapsedTime + " mS con "+total+" instancias de las cuales training: " + this.trainingExamplesList.size() + ", validation: "+
+		String msg = "Cargado fichero "+fileName+"\n"+total+" ejemplos: entrenamiento" + this.trainingExamplesList.size()+", validation: "+
 							this.validationExamplesList.size()+ " y test: "+this.testExamplesList.size();
 		System.out.println(msg);
 		// algunos assert para comprobar que los datos cargados coinciden con 

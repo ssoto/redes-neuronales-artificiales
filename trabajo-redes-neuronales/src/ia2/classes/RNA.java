@@ -70,6 +70,12 @@ public class RNA {
 		}
 	}
 	
+	
+	public double squaredErrorPercentage(DataExample[] examples, int outputSize){
+		//supongo que el omax = 1 y el omin = 0
+		return this.squaredError(examples)*100/(outputSize*examples.length);
+	}
+	
 	public double squaredError(DataExample[] examples){
 		double currentSquaredError, squaredErrorAcum=0;
 		float[] currentExampleInput, currentExampleOutput, result;
@@ -80,7 +86,7 @@ public class RNA {
 			result = this.run(currentExampleInput);
 			currentSquaredError = 0.0;
 			for (int j = 0; j < currentExampleOutput.length; j++) {
-				currentSquaredError += Math.sqrt(Math.abs(currentExampleOutput[j]-result[j]));
+				currentSquaredError += Math.abs(currentExampleOutput[j]-result[j]);
 			}
 			squaredErrorAcum += currentSquaredError;
 		}

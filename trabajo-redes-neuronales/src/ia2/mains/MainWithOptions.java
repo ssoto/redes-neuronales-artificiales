@@ -1,5 +1,6 @@
 package ia2.mains;
 
+import ia2.classes.DataExample;
 import ia2.classes.DataSet;
 import ia2.classes.RNA;
 
@@ -48,7 +49,7 @@ public class MainWithOptions {
 		String	momentum = "momentum";
 		String	learningRate = "learningRate";
 		String 	fileOption = "dataFile";
-		String  outputFileName = "./output.txt";
+		String  outputFileName = "./output";
 		
 		String header = "Ejecutable para entrenar una red neuronal a partir \nde un archivo perteneciente a PROBEN1\n";
 		String footer = "\nProyecto para la asignatura IA2\nAlojado en https://github.com/ssoto/redes-neuronales-artificiales\n\n";
@@ -104,7 +105,6 @@ public class MainWithOptions {
 				hydeLayerSize = 0;
 				if (cmd.hasOption(hyde)){
 					hydeLayerSize = Integer.parseInt(cmd.getOptionValue(hyde));
-					System.out.print("Capa oculta con "+hydeLayerSize+" elementos");
 				}
 
 				// opcion de momentum
@@ -129,10 +129,10 @@ public class MainWithOptions {
         } 
 		
 		// se redirecciona la salida al fichero de marras
-		String timeStamp = new SimpleDateFormat("HHmmss_ddMMyyyy").format(Calendar.getInstance().getTime());
-		PrintStream out = new PrintStream(new FileOutputStream(outputFileName+timeStamp));
-		System.setOut(out);
-		
+//		String timeStamp = new SimpleDateFormat("HHmmss_ddMMyyyy").format(Calendar.getInstance().getTime());
+//		PrintStream out = new PrintStream(new FileOutputStream(outputFileName+timeStamp+".txt"));
+//		System.setOut(out);
+//		
 		System.out.printf( "Parámetros para el algoritmo:\n\tcapas ocultas:%d\n\tlearningRate: %.2f\n\tmomentum: %.2f\n",
 				hydeLayerSize, momentumRatio, learningRateRatio);
 		
@@ -142,19 +142,60 @@ public class MainWithOptions {
 		 * 
 		 */
 		
-		double minSqrError = Double.MAX_VALUE;
-		int minSqrErrorEpoch = -1;
 		
 		DataSet ds = new DataSet();
 		ds.readFile(proben1File);
+		long startTime = System.currentTimeMillis();
 		
-		RNA redNeuronal = new RNA(ds.getNumInputs(), new int[]{hydeLayerSize, ds.getNumOutputs()});
-		
-		for(int epoch=0; epoch<_MAX_EPOCHS; epoch++){
+		for (int iteration = 0; iteration < 20; iteration++) {
 			
+			double minSqrError = Double.MAX_VALUE; 
+			double tmpSquaredError;
+			double squaredErrorOverValidation=Double.MAX_VALUE;
+			double squaredErrorPercentage=Double.MAX_VALUE;
+			int minSqrErrorEpoch = -1;
+			
+			RNA redNeuronal = new RNA(ds.getNumInputs(), new int[]{hydeLayerSize, ds.getNumOutputs()});
+			redNeuronal.getLayer(1).setIsSigmoid(false);
+			
+			long init = System.currentTimeMillis();
+			
+			for(int epoch=0; epoch<_MAX_EPOCHS; epoch++){
+				
+				traing_over_dataset(ds.getTrainingExamplesSize(), redNeuronal, 
+						ds.getTrainingExamples(), learningRateRatio, momentumRatio);
+				
+				if(epoch % _VERIFY_EPOCHS==0){
+					tmpSquaredError = redNeuronal.squaredError(ds.getValidationExamples());
+					if (tmpSquaredError < minSqrError){
+						minSqrError = tmpSquaredError;
+						minSqrErrorEpoch = epoch;
+						//TODO: almacenar la red para comprobar el error sobre el conjunto de test
+						squaredErrorOverValidation = redNeuronal.squaredError(ds.getValidationExamples());
+						squaredErrorPercentage= redNeuronal.squaredErrorPercentage(ds.getValidationExamples(), ds.getNumOutputs());
+					}
+				}
+			}
+			
+			long total = System.currentTimeMillis()-init;
+			System.out.println("Iteracion "+(iteration+1)+":\tépoca: "+minSqrErrorEpoch+";\terror cuadrático: "+squaredErrorOverValidation
+					+"\terror cuadrático medio: "+squaredErrorPercentage+"\t("+total+"mS)");
 		}
+		long totalTime = (System.currentTimeMillis()-startTime)/1000;
+		System.out.println("Tiempo empleado: "+totalTime+" segundos");
+
 		
-		
+	}
+	
+	private static void traing_over_dataset(int size, RNA redNeuronal,
+					DataExample[] de_array, float learningRate, float momentum) {
+		DataExample currentExample =null;
+		for (int example = 0; example < size; example++) {
+			currentExample = de_array[example];
+			redNeuronal.train( currentExample.getInputs(), 
+							   currentExample.getOutputs(), 
+							   learningRate, momentum);
+		}
 	}
 
 }
