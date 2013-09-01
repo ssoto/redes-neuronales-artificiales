@@ -1,0 +1,13 @@
+Este directorio se crea para incluir los archivos ejecutables.
+A veces la exportación se realiza con warnings, aunque estos no repercuten en 
+la correcta ejecución del programa. 
+
+Otro error que ocurre a veces es:
+ 	$ java -jar red-neuronal-ia2.jar 
+	Failed to load Main-Class manifest attribute from
+En estos casos el error es que el archivo MANIFEST del .jar no incluye la opción 
+de configuración donde se le indica la clase Main a ejecutar.
+Para solventar este error es suficiente con ejecutar el mismo comando añadiendo
+al final el path de la clase main:
+	$ java -jar red-neuronal-ia2.jar ia2.mains.MainWithOptions
+	 

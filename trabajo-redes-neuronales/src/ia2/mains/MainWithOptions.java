@@ -36,7 +36,7 @@ public class MainWithOptions {
 	
 	private static final float _LEARNING_RATE = 0.3f;
 	private static final float _MOMENTUM = 0.6f;
-	private static final String _MY_APP = "BORN_APP";
+	private static final String _MY_APP = "red-neuronal";
 	
 	
 	/**
