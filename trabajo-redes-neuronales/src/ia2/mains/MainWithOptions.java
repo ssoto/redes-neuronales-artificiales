@@ -178,7 +178,7 @@ public class MainWithOptions {
 			}
 			
 			long total = System.currentTimeMillis()-init;
-			System.out.println("Iteracion "+(iteration+1)+":\tépoca: "+minSqrErrorEpoch+";\terror cuadrático: "+squaredErrorOverValidation
+			System.out.println("Iteracion "+(iteration+1)+":\tMejor valor en época: "+minSqrErrorEpoch+";\n\terror cuadrático: "+squaredErrorOverValidation
 					+"\terror cuadrático medio: "+squaredErrorPercentage+"\t("+total+"mS)");
 		}
 		long totalTime = (System.currentTimeMillis()-startTime)/1000;
