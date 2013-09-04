@@ -129,7 +129,7 @@ public class DataSet{
 		
 		// imprimimos los tamaños y tiempos de lectura de los datos
 		int total = this.getTrainingExamplesSize()+this.getValidationExamplesSize()+this.getTestExamplesSize();
-		String msg = "Cargado fichero "+fileName+"\n"+total+" ejemplos: entrenamiento" + this.trainingExamplesList.size()+", validation: "+
+		String msg = "Cargado fichero "+fileName+"\n"+total+" ejemplos: entrenamiento " + this.trainingExamplesList.size()+", validation: "+
 							this.validationExamplesList.size()+ " y test: "+this.testExamplesList.size();
 		System.out.println(msg);
 		// algunos assert para comprobar que los datos cargados coinciden con 

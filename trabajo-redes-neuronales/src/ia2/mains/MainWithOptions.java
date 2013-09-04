@@ -1,5 +1,7 @@
 package ia2.mains;
 
+import javax.lang.model.type.NullType;
+
 import ia2.classes.DataExample;
 import ia2.classes.DataSet;
 import ia2.classes.RNA;
@@ -28,6 +30,8 @@ public class MainWithOptions {
 	
 	private static final int _MAX_EPOCHS = 3000;
 	private static final int _VERIFY_EPOCHS = 5;
+	private static final int _RUNS = 10;
+	
 	
 	private static final float _LEARNING_RATE = 0.1f;
 	private static final float _MOMENTUM = 0.5f;
@@ -51,7 +55,7 @@ public class MainWithOptions {
 		
 		// varialbes donde guardar parámetros de entrada
 		float learningRateRatio, momentumRatio;
-		int[] hydenLayer;
+		int[] hydenLayer = null;
 		String proben1File;
 		String hydenLayerSizeString;
 		
@@ -64,7 +68,6 @@ public class MainWithOptions {
 		
 		
 		Option hydeOption = new Option(hyde, true, "Numero de neuronas en la(s) capas oculta.\nSi es una única capa oculta se indica valor 0.\nSi hay mas de una capa oculta se indican dos valores numéricos \nseparados por coma, en este caso no se permite valor 0");
-		hydeOption.setRequired(true);
 		options.addOption(hydeOption);
 
 		
@@ -99,17 +102,13 @@ public class MainWithOptions {
 					proben1File = cmd.getOptionValue(fileOption);
 				}
 				// tratamos numero de elementos de la capa oculta
-				if (!cmd.hasOption(hyde)){
-					new HelpFormatter().printHelp("myapp", header, options, footer, true);
-	                return;
-				}
-				else{
+				hydenLayerSizeString="";
+				if (cmd.hasOption(hyde)){
 					String[] result;
 					String hydeLayers = cmd.getOptionValue(hyde);
 					if(hydeLayers.contains(",")){
 						result = hydeLayers.split(","); 
 						hydenLayer= new int[result.length];
-						hydenLayerSizeString = "";
 						for (int i=0 ; i<result.length; i++) {
 							hydenLayer[i] = Integer.parseInt(result[i]);
 							hydenLayerSizeString += result[i]+"+";
@@ -147,8 +146,8 @@ public class MainWithOptions {
             return;
         } 
 		
-		System.out.printf( "Parámetros para el algoritmo:\n\tcapas ocultas: %s\n\tlearningRate: %.2f\n\tmomentum: %.2f\n",
-				hydenLayerSizeString, momentumRatio, learningRateRatio);
+		System.out.printf( "Parámetros para el algoritmo:\n\tlearningRate: %.2f\n\tmomentum: %.2f\n",
+				momentumRatio, learningRateRatio);
 		
 		/************************************************************************
 		 * 
@@ -159,16 +158,43 @@ public class MainWithOptions {
 		
 		DataSet ds = new DataSet();
 		ds.readFile(proben1File);
-		long startTime = System.currentTimeMillis();
-		int epoch;
 		
-		for (int iteration = 0; iteration < 20; iteration++) {
+		if(hydenLayer != null){
+			// se ejecuta con la opción por teclado
+			runWith(ds, learningRateRatio, momentumRatio, hydenLayer);
+		}
+		else{
+			int outputs = ds.getNumOutputs();
+			// se ejecuta con estructuras para medir rendimiento
+			int[][] hydenTests = {{0,outputs},{2,outputs},{4,outputs},{8,outputs},{16,outputs},
+					{2,4,outputs}};
+			for (int j = 0; j < hydenTests.length; j++) {
+				runWith(ds, learningRateRatio, momentumRatio, hydenTests[j]);
+			}
+		}
+	}
+	
+		
+	public static void runWith(DataSet ds, float learningRateRatio, float momentumRatio,
+			int[] hydenLayer){
+		long startTime = System.currentTimeMillis();
+		String hydeStr = "";
+		for (int i = 0; i < hydenLayer.length; i++) {
+			hydeStr+=String.valueOf(hydenLayer[i])+"+";
+		}
+		System.out.println("###############################################\nEstructura de red: "+hydeStr.substring(0, hydeStr.length()-1));
+		int epoch;
+		// vectores para posteriormente calcular media y desviación
+		double[] minErrorValidationAcum = new double[_RUNS];
+		double[] minErrorTrainingAcum = new double[_RUNS];
+		double[] minErrorTestAcum = new double[_RUNS];
+		
+		
+		for (int itr = 0; itr < _RUNS; itr++) {
 			
-			double minErrorVa = Double.MAX_VALUE;
-			double minErrorTest = Double.MAX_VALUE; 
-			int minSqrErrorEpoch = -1;
+			double minSqrErrorPercentValidation = Double.MAX_VALUE;
+			int minSqrErrorEpoch = 0;
 			
-			hydenLayer[hydenLayer.length-1] = ds.getNumOutputs();
 			RNA redNeuronal = new RNA(ds.getNumInputs(), hydenLayer);
 			redNeuronal.getLayer(1).setIsSigmoid(false);
 			
@@ -181,27 +207,47 @@ public class MainWithOptions {
 				
 				if(epoch % _VERIFY_EPOCHS==0 && epoch!=0){
 					
-					double currentErrorVa = redNeuronal.squaredError(ds.getValidationExamples());
+					double currentErrorVa = redNeuronal.squaredErrorPercentage(ds.getValidationExamples(),
+							ds.getNumOutputs());
 					
 					// comprobamos GL5
-					double gl5 = 100 * (currentErrorVa / minErrorVa - (double)1 );
-					minErrorTest = redNeuronal.squaredErrorPercentage(ds.getTestExamples(), ds.getNumOutputs());
+					double gl5 = 100 * (currentErrorVa / minSqrErrorPercentValidation - (double)1 );
+					
+					if (currentErrorVa < minSqrErrorPercentValidation){
+						minSqrErrorPercentValidation = currentErrorVa;
+						minSqrErrorEpoch = epoch;
+					}
 					
 					if (gl5 > 5){
 						break;
 					}
-					if (currentErrorVa < minErrorVa){
-						minErrorVa = currentErrorVa;
-						minSqrErrorEpoch = epoch;
-					}
-					
 				}
 			}
 			
+			// se almacenan los mínimos errores
+			minErrorValidationAcum[itr] = minSqrErrorPercentValidation;
+			minErrorTrainingAcum[itr] = redNeuronal.squaredErrorPercentage(ds.getTrainingExamples(), 
+					ds.getNumOutputs());
+			minErrorTestAcum[itr] = redNeuronal.squaredErrorPercentage(ds.getValidationExamples(), 
+					ds.getNumOutputs());
+			
+			
 			long total = System.currentTimeMillis()-init;
-			System.out.println("Iteracion "+(iteration+1)+":\ten época: "+epoch 
-					+"\terror sobre test: "+minErrorTest+"\t("+total+"mS)");
+//			System.out.println("Iteracion "+(itr+1)+":\t finaliza en epoca: "+minSqrErrorEpoch+"("+total+" mS)");
 		}
+		double meanTr = mean(minErrorTrainingAcum);
+		double stdTr = standardDeviationMean(minErrorTrainingAcum);
+		
+		double meanVa = mean(minErrorValidationAcum);
+		double stdVa = standardDeviationMean(minErrorValidationAcum);
+		
+		double meanTest = mean(minErrorTestAcum);
+		double stdTest = standardDeviationMean(minErrorTestAcum);
+		
+		System.out.println(String.format("Training set\t media: %.3f\t desviacion: %.3f", meanTr, stdTr));
+		System.out.println(String.format("Validation set\t media: %.3f\t desviacion: %.3f", meanVa, stdVa));
+		System.out.println(String.format("Test set\t media: %.3f\t desviacion: %.3f",meanTest,stdTest));
+		
 		long totalTime = (System.currentTimeMillis()-startTime)/1000;
 		System.out.println("Tiempo empleado: "+totalTime+" segundos");
 		
@@ -216,6 +262,31 @@ public class MainWithOptions {
 							   currentExample.getOutputs(), 
 							   learningRate, momentum);
 		}
+	}
+	
+	public static double mean(double[] data){
+		double mean = 0; 
+		final int n = data.length; 
+		if ( n < 2 ){ 
+			return Double.NaN; 
+		}
+		else{
+			for ( int i=0; i<n; i++ ){ 
+				mean += data[i];
+			}
+		}
+		mean /= n; 
+		return mean;
+	}
+	
+	public static double standardDeviationMean ( double[] data ){ 
+		double mean = mean(data);
+		double sum = 0; 
+		for ( int i=0; i<data.length; i++ ){ 
+			final double v = data[i] - mean; 
+			sum += v * v; 
+		}
+		return Math.sqrt( sum / ( data.length - 1 ) ); 
 	}
 
 }
