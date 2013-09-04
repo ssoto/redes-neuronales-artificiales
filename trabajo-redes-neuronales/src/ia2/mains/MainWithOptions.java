@@ -29,8 +29,8 @@ public class MainWithOptions {
 	private static final int _MAX_EPOCHS = 3000;
 	private static final int _VERIFY_EPOCHS = 5;
 	
-	private static final float _LEARNING_RATE = 0.3f;
-	private static final float _MOMENTUM = 0.6f;
+	private static final float _LEARNING_RATE = 0.1f;
+	private static final float _MOMENTUM = 0.5f;
 	private static final String _MY_APP = "red-neuronal";
 	
 	
@@ -147,7 +147,7 @@ public class MainWithOptions {
             return;
         } 
 		
-		System.out.printf( "Parámetros para el algoritmo:\n\tcapas ocultas:%s\n\tlearningRate: %.2f\n\tmomentum: %.2f\n",
+		System.out.printf( "Parámetros para el algoritmo:\n\tcapas ocultas: %s\n\tlearningRate: %.2f\n\tmomentum: %.2f\n",
 				hydenLayerSizeString, momentumRatio, learningRateRatio);
 		
 		/************************************************************************
@@ -190,7 +190,7 @@ public class MainWithOptions {
 					if (gl5 > 5){
 						break;
 					}
-					else if (currentErrorVa < minErrorVa){
+					if (currentErrorVa < minErrorVa){
 						minErrorVa = currentErrorVa;
 						minSqrErrorEpoch = epoch;
 					}
