@@ -4,11 +4,6 @@ import ia2.classes.DataExample;
 import ia2.classes.DataSet;
 import ia2.classes.RNA;
 
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -49,7 +44,6 @@ public class MainWithOptions {
 		String	momentum = "momentum";
 		String	learningRate = "learningRate";
 		String 	fileOption = "dataFile";
-		String  outputFileName = "./output";
 		
 		String header = "Ejecutable para entrenar una red neuronal a partir \nde un archivo perteneciente a PROBEN1\n";
 		String footer = "\nProyecto para la asignatura IA2\nAlojado en https://github.com/ssoto/redes-neuronales-artificiales\n\n";
@@ -57,8 +51,9 @@ public class MainWithOptions {
 		
 		// varialbes donde guardar parámetros de entrada
 		float learningRateRatio, momentumRatio;
-		int hydeLayerSize;
+		int[] hydenLayer;
 		String proben1File;
+		String hydenLayerSizeString;
 		
 		// se configuran las opciones que queremos recoger por la línea de comandos		
 		Options options = new Options();
@@ -69,7 +64,7 @@ public class MainWithOptions {
 		
 		options.addOption( 	hyde,
 							true, 
-							"Numero de neuronas en la capa oculta" );
+							"Numero de neuronas en la(s) capas oculta. Se indican dos valores numéricos separados por coma.\n No se permite valor 0" );
 		
 		String momentumHelp = "valor para momentum. Por defecto valdrá "+_MOMENTUM+". Recuerde que es un tipo double: 0.3 (pe)";
 		options.addOption( 	momentum, 
@@ -102,9 +97,31 @@ public class MainWithOptions {
 					proben1File = cmd.getOptionValue(fileOption);
 				}
 				// tratamos numero de elementos de la capa oculta
-				hydeLayerSize = 0;
-				if (cmd.hasOption(hyde)){
-					hydeLayerSize = Integer.parseInt(cmd.getOptionValue(hyde));
+				if (!cmd.hasOption(hyde)){
+					new HelpFormatter().printHelp("myapp", header, options, footer, true);
+	                return;
+				}
+				else{
+					String[] result;
+					String hydeLayers = cmd.getOptionValue(hyde);
+					if(hydeLayers.contains(",")){
+						result = hydeLayers.split(","); 
+						hydenLayer= new int[result.length];
+						hydenLayerSizeString = "";
+						for (int i=0 ; i<result.length; i++) {
+							hydenLayer[i] = Integer.parseInt(result[i]);
+							hydenLayerSizeString += result[i]+"+";
+						}
+						// le quitamos el ultimo + añadido
+						hydenLayerSizeString = hydenLayerSizeString.substring(0, hydenLayerSizeString.length()-1);
+					}
+					else{
+						// tiene dimension 2 porque es la oculta y 
+						// una mas para la salida que se inicializa después
+						hydenLayer = new int[2];
+						hydenLayer[0] = Integer.parseInt(cmd.getOptionValue(hyde));
+						hydenLayerSizeString = (new Integer(hydenLayer[0])).toString(); 
+					}
 				}
 
 				// opcion de momentum
@@ -128,13 +145,8 @@ public class MainWithOptions {
             return;
         } 
 		
-		// se redirecciona la salida al fichero de marras
-//		String timeStamp = new SimpleDateFormat("HHmmss_ddMMyyyy").format(Calendar.getInstance().getTime());
-//		PrintStream out = new PrintStream(new FileOutputStream(outputFileName+timeStamp+".txt"));
-//		System.setOut(out);
-//		
-		System.out.printf( "Parámetros para el algoritmo:\n\tcapas ocultas:%d\n\tlearningRate: %.2f\n\tmomentum: %.2f\n",
-				hydeLayerSize, momentumRatio, learningRateRatio);
+		System.out.printf( "Parámetros para el algoritmo:\n\tcapas ocultas:%s\n\tlearningRate: %.2f\n\tmomentum: %.2f\n",
+				hydenLayerSizeString, momentumRatio, learningRateRatio);
 		
 		/************************************************************************
 		 * 
@@ -146,44 +158,50 @@ public class MainWithOptions {
 		DataSet ds = new DataSet();
 		ds.readFile(proben1File);
 		long startTime = System.currentTimeMillis();
+		int epoch;
 		
 		for (int iteration = 0; iteration < 20; iteration++) {
 			
-			double minSqrError = Double.MAX_VALUE; 
-			double tmpSquaredError;
-			double squaredErrorOverValidation=Double.MAX_VALUE;
-			double squaredErrorPercentage=Double.MAX_VALUE;
+			double minErrorVa = Double.MAX_VALUE;
+			double minErrorTest = Double.MAX_VALUE; 
 			int minSqrErrorEpoch = -1;
 			
-			RNA redNeuronal = new RNA(ds.getNumInputs(), new int[]{hydeLayerSize, ds.getNumOutputs()});
+			hydenLayer[hydenLayer.length-1] = ds.getNumOutputs();
+			RNA redNeuronal = new RNA(ds.getNumInputs(), hydenLayer);
 			redNeuronal.getLayer(1).setIsSigmoid(false);
 			
 			long init = System.currentTimeMillis();
 			
-			for(int epoch=0; epoch<_MAX_EPOCHS; epoch++){
+			for(epoch=0; epoch<_MAX_EPOCHS; epoch++){
 				
 				traing_over_dataset(ds.getTrainingExamplesSize(), redNeuronal, 
 						ds.getTrainingExamples(), learningRateRatio, momentumRatio);
 				
-				if(epoch % _VERIFY_EPOCHS==0){
-					tmpSquaredError = redNeuronal.squaredError(ds.getValidationExamples());
-					if (tmpSquaredError < minSqrError){
-						minSqrError = tmpSquaredError;
-						minSqrErrorEpoch = epoch;
-						//TODO: almacenar la red para comprobar el error sobre el conjunto de test
-						squaredErrorOverValidation = redNeuronal.squaredError(ds.getValidationExamples());
-						squaredErrorPercentage= redNeuronal.squaredErrorPercentage(ds.getValidationExamples(), ds.getNumOutputs());
+				if(epoch % _VERIFY_EPOCHS==0 && epoch!=0){
+					
+					double currentErrorVa = redNeuronal.squaredError(ds.getValidationExamples());
+					
+					// comprobamos GL5
+					double gl5 = 100 * (currentErrorVa / minErrorVa - (double)1 );
+					minErrorTest = redNeuronal.squaredErrorPercentage(ds.getTestExamples(), ds.getNumOutputs());
+					
+					if (gl5 > 5){
+						break;
 					}
+					else if (currentErrorVa < minErrorVa){
+						minErrorVa = currentErrorVa;
+						minSqrErrorEpoch = epoch;
+					}
+					
 				}
 			}
 			
 			long total = System.currentTimeMillis()-init;
-			System.out.println("Iteracion "+(iteration+1)+":\tMejor valor en época: "+minSqrErrorEpoch+";\n\terror cuadrático: "+squaredErrorOverValidation
-					+"\terror cuadrático medio: "+squaredErrorPercentage+"\t("+total+"mS)");
+			System.out.println("Iteracion "+(iteration+1)+":\ten época: "+epoch 
+					+"\terror sobre test: "+minErrorTest+"\t("+total+"mS)");
 		}
 		long totalTime = (System.currentTimeMillis()-startTime)/1000;
 		System.out.println("Tiempo empleado: "+totalTime+" segundos");
-
 		
 	}
 	
