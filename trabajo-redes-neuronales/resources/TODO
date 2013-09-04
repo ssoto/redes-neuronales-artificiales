@@ -1,4 +1,4 @@
 * Crear main que pida parámetros de configuración de red:
 	- Capa oculta y número de nodos de la misma (por defecto podría ser una 
 	proporción del número de entradas)
-	- learningRate y momentum (con valores establecidos por defult)
+	- 

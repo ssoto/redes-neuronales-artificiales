@@ -40,7 +40,7 @@ public class MainWithOptions {
 	public static void main(String[] args) throws Exception {
 				
 		// cadenas de nombres de opciones
-		String 	hyde = "hydeLayer"; 
+		String 	hyde = "hydeLayers"; 
 		String	momentum = "momentum";
 		String	learningRate = "learningRate";
 		String 	fileOption = "dataFile";
@@ -62,9 +62,11 @@ public class MainWithOptions {
 		dataOption.setRequired(true);
 		options.addOption(dataOption);
 		
-		options.addOption( 	hyde,
-							true, 
-							"Numero de neuronas en la(s) capas oculta. Se indican dos valores numéricos separados por coma.\n No se permite valor 0" );
+		
+		Option hydeOption = new Option(hyde, true, "Numero de neuronas en la(s) capas oculta.\nSi es una única capa oculta se indica valor 0.\nSi hay mas de una capa oculta se indican dos valores numéricos \nseparados por coma, en este caso no se permite valor 0");
+		hydeOption.setRequired(true);
+		options.addOption(hydeOption);
+
 		
 		String momentumHelp = "valor para momentum. Por defecto valdrá "+_MOMENTUM+". Recuerde que es un tipo double: 0.3 (pe)";
 		options.addOption( 	momentum, 
