@@ -1,0 +1,7 @@
+red-neuronal
+	
+red-neuronal-v01r02
+	
+red-neuronal-v01r03
+	se implementa red con varias capas ocultas
+	los criterios de parada son 3000 epochs y GL5
