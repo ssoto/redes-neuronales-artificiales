@@ -170,7 +170,8 @@ public class MainWithOptions {
 			int outputs = ds.getNumOutputs();
 			// se ejecuta con estructuras para medir rendimiento
 			int[][] hydenTests = {{0,outputs},{2,outputs},{4,outputs},{8,outputs},{16,outputs},
-					{2,4,outputs}};
+					{2,4,outputs}, {2,6,outputs}, {2,8,outputs}, {4,2,outputs}, {4,6,outputs},{4,8,outputs},
+					{8,4,outputs}, {8,6,outputs}, {8,8,outputs}, {12,2,outputs}, {12,6,outputs},{12,8,outputs}};
 			for (int j = 0; j < hydenTests.length; j++) {
 				runWith(ds, learningRateRatio, momentumRatio, hydenTests[j]);
 			}
