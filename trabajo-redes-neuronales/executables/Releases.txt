@@ -5,3 +5,7 @@ red-neuronal-v01r02
 red-neuronal-v01r03
 	se implementa red con varias capas ocultas
 	los criterios de parada son 3000 epochs y GL5
+	
+red-neuronal-v01r05
+	se muestra el porcentaje de fallo medio después de las 10 iteraciones
+	en las que se han entrenado 10 redes neuronales.

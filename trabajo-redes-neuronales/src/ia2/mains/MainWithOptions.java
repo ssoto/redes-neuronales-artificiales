@@ -1,5 +1,8 @@
 package ia2.mains;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.lang.model.type.NullType;
 
 import ia2.classes.DataExample;
@@ -176,10 +179,10 @@ public class MainWithOptions {
 	
 		
 	public static void runWith(DataSet ds, float learningRateRatio, float momentumRatio,
-			int[] hydenLayer){
+		int[] hydenLayer){
 		long startTime = System.currentTimeMillis();
 		String hydeStr = "";
-		for (int i = 0; i < hydenLayer.length; i++) {
+		for (int i = 0; i < hydenLayer.length-1; i++) {
 			hydeStr+=String.valueOf(hydenLayer[i])+"+";
 		}
 		System.out.println("###############################################\nEstructura de red: "+hydeStr.substring(0, hydeStr.length()-1));
@@ -188,7 +191,7 @@ public class MainWithOptions {
 		double[] minErrorValidationAcum = new double[_RUNS];
 		double[] minErrorTrainingAcum = new double[_RUNS];
 		double[] minErrorTestAcum = new double[_RUNS];
-		
+		double[]  accuracyError = new double[10];
 		
 		for (int itr = 0; itr < _RUNS; itr++) {
 			
@@ -198,7 +201,6 @@ public class MainWithOptions {
 			RNA redNeuronal = new RNA(ds.getNumInputs(), hydenLayer);
 			redNeuronal.getLayer(1).setIsSigmoid(false);
 			
-			long init = System.currentTimeMillis();
 			
 			for(epoch=0; epoch<_MAX_EPOCHS; epoch++){
 				
@@ -230,10 +232,8 @@ public class MainWithOptions {
 					ds.getNumOutputs());
 			minErrorTestAcum[itr] = redNeuronal.squaredErrorPercentage(ds.getValidationExamples(), 
 					ds.getNumOutputs());
+			accuracyError[itr] = accuracyOverDataSet(redNeuronal,ds.getTestExamples());
 			
-			
-			long total = System.currentTimeMillis()-init;
-//			System.out.println("Iteracion "+(itr+1)+":\t finaliza en epoca: "+minSqrErrorEpoch+"("+total+" mS)");
 		}
 		double meanTr = mean(minErrorTrainingAcum);
 		double stdTr = standardDeviationMean(minErrorTrainingAcum);
@@ -248,8 +248,11 @@ public class MainWithOptions {
 		System.out.println(String.format("Validation set\t media: %.3f\t desviacion: %.3f", meanVa, stdVa));
 		System.out.println(String.format("Test set\t media: %.3f\t desviacion: %.3f",meanTest,stdTest));
 		
+		System.out.println(String.format("Porcentaje de error en clasificación medio en las iteraciones es %.4f", mean(accuracyError)));
+		
+		
 		long totalTime = (System.currentTimeMillis()-startTime)/1000;
-		System.out.println("Tiempo empleado: "+totalTime+" segundos");
+		System.out.println("Tiempo empleado: "+totalTime+" segundos\n\n");
 		
 	}
 	
@@ -262,6 +265,14 @@ public class MainWithOptions {
 							   currentExample.getOutputs(), 
 							   learningRate, momentum);
 		}
+	}
+	
+	private static float  accuracyOverDataSet(RNA redNeuronal, DataExample[] de_array) {
+		float result = 0;
+		for (DataExample dataExample : de_array) {
+			result += redNeuronal.classificationAccuracy(dataExample.getInputs(), dataExample.getOutputs());
+		}
+		return result/de_array.length;
 	}
 	
 	public static double mean(double[] data){

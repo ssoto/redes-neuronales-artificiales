@@ -10,6 +10,3 @@ de configuración donde se le indica la clase Main a ejecutar.
 Para solventar este error es suficiente con ejecutar el mismo comando añadiendo
 al final el path de la clase main:
 	$ java -jar red-neuronal-ia2.jar ia2.mains.MainWithOptions
-	 
-Para ejecutar sobre todos los .dt:
-	for FILE in $(ls *.dt); do  java -jar $PATH/red-neuronal-v01r02.jar -dataFile $f -hydeLayer 8 -learningRate 0.4 -momentum 0.7 $f; done
