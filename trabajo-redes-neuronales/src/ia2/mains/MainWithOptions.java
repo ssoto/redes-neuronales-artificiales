@@ -35,7 +35,7 @@ public class MainWithOptions {
 	private static final int _VERIFY_EPOCHS = 5;
 	private static final int _RUNS = 10;
 	
-	
+	private static final double _PROGRESS_SANK = 0.1;
 	private static final float _LEARNING_RATE = 0.1f;
 	private static final float _MOMENTUM = 0.5f;
 	private static final String _MY_APP = "red-neuronal";
@@ -119,6 +119,7 @@ public class MainWithOptions {
 						// le quitamos el ultimo + añadido
 						hydenLayerSizeString = hydenLayerSizeString.substring(0, hydenLayerSizeString.length()-1);
 					}
+					
 					else{
 						// tiene dimension 2 porque es la oculta y 
 						// una mas para la salida que se inicializa después
@@ -158,6 +159,9 @@ public class MainWithOptions {
 		 * 
 		 */
 		
+		System.out.print("\"Problem\", \"Media Training\", \"Desviación Training\", \"Media Val\", \"Desviación Val\", \"Media Test\", \"Desviación Test\", ");
+		System.out.println("\"Test set classif media\",\"Test set classif desviacion\", \"Overfit media\", \"Overfit desviacion\", \"Total Epochs media\", \"Total Epochs desviacion\", \"RelevantEpochs media\", \"RelevantEpochs desviacion\" ");
+		
 		
 		DataSet ds = new DataSet();
 		ds.readFile(proben1File);
@@ -169,9 +173,12 @@ public class MainWithOptions {
 		else{
 			int outputs = ds.getNumOutputs();
 			// se ejecuta con estructuras para medir rendimiento
-			int[][] hydenTests = {{0,outputs},{2,outputs},{4,outputs},{8,outputs},{16,outputs},
-					{2,4,outputs}, {2,6,outputs}, {2,8,outputs}, {4,2,outputs}, {4,6,outputs},{4,8,outputs},
-					{8,4,outputs}, {8,6,outputs}, {8,8,outputs}, {12,2,outputs}, {12,6,outputs},{12,8,outputs}};
+			int[][] hydenTests = {{0,outputs},{2,outputs},{4,outputs},{8,outputs},
+					{16,outputs}, {2,4,outputs}, {2,6,outputs}, {2,8,outputs}, 
+					{4,2,outputs}, {4,6,outputs},{4,8,outputs}, {8,4,outputs}, 
+					{8,6,outputs}, {8,8,outputs}, {12,2,outputs}, {12,6,outputs},
+					{12,8,outputs}};
+			
 			for (int j = 0; j < hydenTests.length; j++) {
 				runWith(ds, learningRateRatio, momentumRatio, hydenTests[j]);
 			}
@@ -186,25 +193,34 @@ public class MainWithOptions {
 		for (int i = 0; i < hydenLayer.length-1; i++) {
 			hydeStr+=String.valueOf(hydenLayer[i])+"+";
 		}
-		System.out.println("###############################################\nEstructura de red: "+hydeStr.substring(0, hydeStr.length()-1));
+		System.out.print(String.format("\""+ds.getFileName()+" ("+hydeStr.substring(0, hydeStr.length()-1))+")\", ");
 		int epoch;
 		// vectores para posteriormente calcular media y desviación
 		double[] minErrorValidationAcum = new double[_RUNS];
 		double[] minErrorTrainingAcum = new double[_RUNS];
 		double[] minErrorTestAcum = new double[_RUNS];
-		double[]  accuracyError = new double[10];
+		double[] minTestClassification = new double[_RUNS];
+		double[] accuracyError = new double[_RUNS];
+		double[] minGl5 = new double [_RUNS];
+		int[] relevantEpoch = new int[_RUNS];
+		int[] totalEpoch = new int[_RUNS];
 		
 		for (int itr = 0; itr < _RUNS; itr++) {
 			
 			double minSqrErrorPercentValidation = Double.MAX_VALUE;
-			int minSqrErrorEpoch = 0;
+			double minSqrErrorPercentTestClassification = Double.MAX_VALUE;
+			double gl5=0;
 			
 			RNA redNeuronal = new RNA(ds.getNumInputs(), hydenLayer);
 			redNeuronal.getLayer(1).setIsSigmoid(false);
-			
+
+			int finalEpoch=0;
 			
 			for(epoch=0; epoch<_MAX_EPOCHS; epoch++){
 				
+				double minSqrErrorTraining = Double.MAX_VALUE;
+				double sumatoryTrainingError = 0;
+				finalEpoch = epoch;
 				traing_over_dataset(ds.getTrainingExamplesSize(), redNeuronal, 
 						ds.getTrainingExamples(), learningRateRatio, momentumRatio);
 				
@@ -213,19 +229,39 @@ public class MainWithOptions {
 					double currentErrorVa = redNeuronal.squaredErrorPercentage(ds.getValidationExamples(),
 							ds.getNumOutputs());
 					
+					double currSqrErrorTraining = redNeuronal.squaredErrorPercentage(ds.getTrainingExamples(), ds.getNumOutputs());
+					sumatoryTrainingError += currSqrErrorTraining;
+					
+					// actualizamos el mínimo error sobre training
+					if(currentErrorVa<minSqrErrorTraining){
+						minSqrErrorTraining = currentErrorVa;
+					}
+					
 					// comprobamos GL5
-					double gl5 = 100 * (currentErrorVa / minSqrErrorPercentValidation - (double)1 );
+					gl5 = 100 * (currentErrorVa / minSqrErrorPercentValidation - (double)1 );
 					
 					if (currentErrorVa < minSqrErrorPercentValidation){
 						minSqrErrorPercentValidation = currentErrorVa;
-						minSqrErrorEpoch = epoch;
+						relevantEpoch[itr] = epoch;
+						minSqrErrorPercentTestClassification = redNeuronal.squaredErrorPercentage(ds.getTestExamples(), ds.getNumOutputs());
 					}
+					
+					// comprobamos si aprende
+					double trainingProgressSank = ((sumatoryTrainingError/(5*minSqrErrorTraining))-1)*1000; 
+//					if( trainingProgressSank < _PROGRESS_SANK ){
+//						break;
+//					}
 					
 					if (gl5 > 5){
 						break;
 					}
 				}
 			}
+			
+			minGl5[itr] = gl5;
+			totalEpoch[itr] = finalEpoch;
+			
+			minTestClassification[itr] = minSqrErrorPercentTestClassification;
 			
 			// se almacenan los mínimos errores
 			minErrorValidationAcum[itr] = minSqrErrorPercentValidation;
@@ -236,24 +272,46 @@ public class MainWithOptions {
 			accuracyError[itr] = accuracyOverDataSet(redNeuronal,ds.getTestExamples());
 			
 		}
+		// media y desviación sobre training
 		double meanTr = mean(minErrorTrainingAcum);
 		double stdTr = standardDeviationMean(minErrorTrainingAcum);
+		System.out.print(String.format("\"%.3f\", \"%.3f\", ", meanTr, stdTr));
 		
+		// media y desviación sobre validation
 		double meanVa = mean(minErrorValidationAcum);
 		double stdVa = standardDeviationMean(minErrorValidationAcum);
+		System.out.print(String.format("\"%.3f\", \"%.3f\", ", meanVa, stdVa));
 		
+		// media y desviación sobre test
 		double meanTest = mean(minErrorTestAcum);
 		double stdTest = standardDeviationMean(minErrorTestAcum);
+		System.out.print(String.format("\"%.3f\", \"%.3f\", ",meanTest,stdTest));
 		
-		System.out.println(String.format("Training set\t media: %.3f\t desviacion: %.3f", meanTr, stdTr));
-		System.out.println(String.format("Validation set\t media: %.3f\t desviacion: %.3f", meanVa, stdVa));
-		System.out.println(String.format("Test set\t media: %.3f\t desviacion: %.3f",meanTest,stdTest));
+		// media y desviación sobre test classification
+		double meanTestClassification = mean(minTestClassification);
+		double stdTestClassification = standardDeviationMean(minTestClassification);
+		System.out.print(String.format("\"%.3f\", \"%.3f\", ",meanTestClassification,stdTestClassification));
 		
-		System.out.println(String.format("Porcentaje de error en clasificación medio en las iteraciones es %.4f", mean(accuracyError)));
+		// overfit, el gl5 al final del entrenamiento
+		double meanOverfit = mean(minGl5);
+		double stdOverfit = standardDeviationMean(minGl5);
+		System.out.print(String.format("\"%.3f\", \"%.3f\", ",meanOverfit,stdOverfit));
+		
+		// media y desviación sobre relevant epoch
+		double meanTotalEpoch = mean(totalEpoch);
+		double stdTotalEpoch = standardDeviationMean(totalEpoch);
+		System.out.print(String.format("\"%.0f\", \"%.0f\", ", meanTotalEpoch, stdTotalEpoch));
+		
+		// media y desviación sobre relevant epoch
+		double meanEpoch = mean(relevantEpoch);
+		double stdEpoch = standardDeviationMean(relevantEpoch);
+		System.out.println(String.format("\"%.0f\", \"%.0f\" ", meanEpoch, stdEpoch));
+		
+		//System.out.println(String.format("Porcentaje de error en clasificación medio en las iteraciones es %.4f", mean(accuracyError)));
 		
 		
 		long totalTime = (System.currentTimeMillis()-startTime)/1000;
-		System.out.println("Tiempo empleado: "+totalTime+" segundos\n\n");
+		//System.out.println("Tiempo empleado: "+totalTime+" segundos\n\n");
 		
 	}
 	
@@ -291,7 +349,32 @@ public class MainWithOptions {
 		return mean;
 	}
 	
+	public static double mean(int[] data){
+		double mean = 0; 
+		final int n = data.length; 
+		if ( n < 2 ){ 
+			return Double.NaN; 
+		}
+		else{
+			for ( int i=0; i<n; i++ ){ 
+				mean += data[i];
+			}
+		}
+		mean /= n; 
+		return mean;
+	}
+	
 	public static double standardDeviationMean ( double[] data ){ 
+		double mean = mean(data);
+		double sum = 0; 
+		for ( int i=0; i<data.length; i++ ){ 
+			final double v = data[i] - mean; 
+			sum += v * v; 
+		}
+		return Math.sqrt( sum / ( data.length - 1 ) ); 
+	}
+	
+	public static double standardDeviationMean ( int[] data){ 
 		double mean = mean(data);
 		double sum = 0; 
 		for ( int i=0; i<data.length; i++ ){ 

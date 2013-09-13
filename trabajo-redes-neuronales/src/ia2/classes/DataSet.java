@@ -17,6 +17,7 @@ public class DataSet{
 	}
 	
 	private File f;
+	private String fileName;
 	
 	private int numInputs, numOutputs;
 	private Type typeInputs, typeOutputs;
@@ -31,6 +32,9 @@ public class DataSet{
 	public DataSet(){
 		this.reset();
 	}
+	
+	
+	
 	/*
 	 * Este método inicializa a vacíos los atributos 
 	 */
@@ -43,6 +47,8 @@ public class DataSet{
 	
 	
 	public void readFile(String fileName){
+		String[] splitted = fileName.split("/");
+		this.fileName = splitted[splitted.length-1];
 		// reiniciamos por si las listas contienen ejemplos de una ejecución anterior
 		this.reset();
 		// almacenamos el tiempo de inicio para luego mostrar lo tardado en cargar
@@ -129,9 +135,11 @@ public class DataSet{
 		
 		// imprimimos los tamaños y tiempos de lectura de los datos
 		int total = this.getTrainingExamplesSize()+this.getValidationExamplesSize()+this.getTestExamplesSize();
-		String msg = "Cargado fichero "+fileName+"\n"+total+" ejemplos: entrenamiento " + this.trainingExamplesList.size()+", validation: "+
-							this.validationExamplesList.size()+ " y test: "+this.testExamplesList.size();
-		System.out.println(msg);
+		
+		//	String msg = "Cargado fichero "+fileName+"\n"+total+" ejemplos: entrenamiento " + this.trainingExamplesList.size()+", validation: "+
+		//  this.validationExamplesList.size()+ " y test: "+this.testExamplesList.size();
+		//System.out.println(msg);
+		
 		// algunos assert para comprobar que los datos cargados coinciden con 
 		// la cabecera del archivo
 		assert this.trainingExamplesSize == this.trainingExamplesList.size();
@@ -170,8 +178,6 @@ public class DataSet{
 		
 		return result;
 	}
-	
-
 
 	/**
 	 * @param type
@@ -321,7 +327,12 @@ public class DataSet{
 	public void setValidationExamples(DataExample[] validationExamples){
 		this.validationExamples = validationExamples;
 	}
-	
+
+
+
+	public String getFileName() {
+		return fileName;
+	}
 	
 
 }
