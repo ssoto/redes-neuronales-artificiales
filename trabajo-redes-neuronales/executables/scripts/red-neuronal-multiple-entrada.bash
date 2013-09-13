@@ -11,7 +11,7 @@
 #
 #  trabajo-redes-neuronales/resources/dataSets/cancer
 
-JAR_PATH="./../../../executables/red-neuronal-v01r05.jar"
+JAR_PATH="./../../../executables/red-neuronal-v01r06.jar"
 
 for FILE in $(ls ./*.dt); do 
 	java -jar $JAR_PATH -dataFile $FILE $@

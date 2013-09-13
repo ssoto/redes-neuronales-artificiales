@@ -35,7 +35,7 @@ public class MainWithOptions {
 	private static final int _VERIFY_EPOCHS = 5;
 	private static final int _RUNS = 10;
 	
-	private static final double _PROGRESS_SANK = 0.1;
+	private static final double _PROGRESS_SANK = 0.1f;
 	private static final float _LEARNING_RATE = 0.1f;
 	private static final float _MOMENTUM = 0.5f;
 	private static final String _MY_APP = "red-neuronal";
@@ -51,6 +51,7 @@ public class MainWithOptions {
 		String	momentum = "momentum";
 		String	learningRate = "learningRate";
 		String 	fileOption = "dataFile";
+		String  noHeadOption = "noHead";
 		
 		String header = "Ejecutable para entrenar una red neuronal a partir \nde un archivo perteneciente a PROBEN1\n";
 		String footer = "\nProyecto para la asignatura IA2\nAlojado en https://github.com/ssoto/redes-neuronales-artificiales\n\n";
@@ -61,6 +62,7 @@ public class MainWithOptions {
 		int[] hydenLayer = null;
 		String proben1File;
 		String hydenLayerSizeString;
+		boolean printHead = false;
 		
 		// se configuran las opciones que queremos recoger por la línea de comandos		
 		Options options = new Options();
@@ -83,6 +85,8 @@ public class MainWithOptions {
 		options.addOption( 	learningRate,
 							true, 
 							learningRateHelp);
+		
+		options.addOption(  noHeadOption, "noHead", false, "No muestra la cabecera de CSV" );
 		
 		options.addOption(  "h", "help", false, "Muestra este mensaje" );
 		
@@ -107,14 +111,14 @@ public class MainWithOptions {
 				// tratamos numero de elementos de la capa oculta
 				hydenLayerSizeString="";
 				if (cmd.hasOption(hyde)){
-					String[] result;
+					String[] splitted;
 					String hydeLayers = cmd.getOptionValue(hyde);
 					if(hydeLayers.contains(",")){
-						result = hydeLayers.split(","); 
-						hydenLayer= new int[result.length];
-						for (int i=0 ; i<result.length; i++) {
-							hydenLayer[i] = Integer.parseInt(result[i]);
-							hydenLayerSizeString += result[i]+"+";
+						splitted = hydeLayers.split(","); 
+						hydenLayer= new int[splitted.length+1];
+						for (int i=0 ; i<splitted.length; i++) {
+							hydenLayer[i] = Integer.parseInt(splitted[i]);
+							hydenLayerSizeString += splitted[i]+"+";
 						}
 						// le quitamos el ultimo + añadido
 						hydenLayerSizeString = hydenLayerSizeString.substring(0, hydenLayerSizeString.length()-1);
@@ -127,6 +131,10 @@ public class MainWithOptions {
 						hydenLayer[0] = Integer.parseInt(cmd.getOptionValue(hyde));
 						hydenLayerSizeString = (new Integer(hydenLayer[0])).toString(); 
 					}
+				}
+				
+				if(cmd.hasOption(noHeadOption)){
+					printHead = true;
 				}
 
 				// opcion de momentum
@@ -150,24 +158,26 @@ public class MainWithOptions {
             return;
         } 
 		
-		System.out.printf( "Parámetros para el algoritmo:\n\tlearningRate: %.2f\n\tmomentum: %.2f\n",
-				momentumRatio, learningRateRatio);
+//		System.out.printf( "Parámetros para el algoritmo:\n\tlearningRate: %.2f\n\tmomentum: %.2f\n",
+//				momentumRatio, learningRateRatio);
 		
 		/************************************************************************
 		 * 
 		 * AQUÍ EMPIEZA EL TRABAJO CON LA RED NEURONAL REALMENTE
 		 * 
 		 */
-		
-		System.out.print("\"Problem\", \"Media Training\", \"Desviación Training\", \"Media Val\", \"Desviación Val\", \"Media Test\", \"Desviación Test\", ");
-		System.out.println("\"Test set classif media\",\"Test set classif desviacion\", \"Overfit media\", \"Overfit desviacion\", \"Total Epochs media\", \"Total Epochs desviacion\", \"RelevantEpochs media\", \"RelevantEpochs desviacion\" ");
+		if( ! printHead ){
+			System.out.print("\"Problem\", \"Media Training\", \"Desviación Training\", \"Media Val\", \"Desviación Val\", \"Media Test\", \"Desviación Test\", ");
+			System.out.println("\"Test set classif media\",\"Test set classif desviacion\", \"Overfit media\", \"Overfit desviacion\", \"Total Epochs media\", \"Total Epochs desviacion\", \"RelevantEpochs media\", \"RelevantEpochs desviacion\" ");
+		}
 		
 		
 		DataSet ds = new DataSet();
 		ds.readFile(proben1File);
 		
 		if(hydenLayer != null){
-			// se ejecuta con la opción por teclado
+			hydenLayer[hydenLayer.length-1] = ds.getNumOutputs();
+			
 			runWith(ds, learningRateRatio, momentumRatio, hydenLayer);
 		}
 		else{
